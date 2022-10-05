@@ -15,3 +15,6 @@ conda activate RL
 conda deactivate (退出该环境)
 
 conda env list 查看已有环境list
+
+## vscode 打开项目
+comment shift P 输入 “interpreter” 选中所属环境
