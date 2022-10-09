@@ -18,3 +18,12 @@ conda env list 查看已有环境list
 
 ## vscode 打开项目
 comment shift P 输入 “interpreter” 选中所属环境
+
+## 引用同地址的文件出现 module not found error
+### pip install -e .
+(fsvi) liyanran@liyanrandeMBP function-space-variational-inference-yanran % pip install -e .
+Obtaining file:///Users/liyanran/Desktop/Andrew/function-space-variational-inference-yanran
+  Preparing metadata (setup.py) ... done
+Installing collected packages: fsvi
+  Running setup.py develop for fsvi
+Successfully installed fsvi-0.1
