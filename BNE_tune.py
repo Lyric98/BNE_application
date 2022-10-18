@@ -302,12 +302,6 @@ means_test_mcmc = make_bma_samples(
 # original model.
 estimate_mean = "True" # @param ["True", "False"]
 variance_prior_mean=0. # @param
-# # MAP and MCMC configs
-# map_step_size=0.1 # @param
-# map_num_steps=10_000 # @param
-
-# mcmc_step_size=1e-2 # @param
-# mcmc_num_steps=10_000 # @param
 
 bne_gp_config = DEFAULT_GP_CONFIG.copy()
 bne_model_config = DEFAULT_BNE_CONFIG.copy()
@@ -333,7 +327,7 @@ mcmc_config.update(dict(step_size=mcmc_step_size,
 # ### Build Model
 
 # In[17]:
-
+print("Check Hyperparameters:", bma_model_config, bne_model_config, map_config, mcmc_config)
 
 # Construct posterior sampler.
 bne_prior, bne_gp_config = bne_model_dist(
@@ -563,7 +557,7 @@ color_norm_weights_var = make_color_norm(
 base_model_names = ["AV", "GS", "CACES"]
 for base_model_name in base_model_names:
     save_name = os.path.join(_SAVE_ADDR_PREFIX,
-                             'base_weights_{}_bmals_{}_r_{}_bnels_{}_r_{}.png'.format(
+                             'base_weights_{}_bma_ls_{}_r_{}_bne_ls_{}_r_{}.png'.format(
                                  base_model_name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
                                  bne_gp_lengthscale, bne_gp_l2_regularizer))
     
@@ -582,7 +576,7 @@ for base_model_name in base_model_names:
 # plot weights' variance
 for base_model_name in base_model_names:
     save_name = os.path.join(_SAVE_ADDR_PREFIX,
-                             'base_wvar_{}_bmals_{}_r_{}_bnels_{}_r_{}.png'.format(
+                             'base_wvar_{}_bma_ls_{}_r_{}_bne_ls_{}_r_{}.png'.format(
                                  base_model_name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
                                  bne_gp_lengthscale, bne_gp_l2_regularizer))
     
@@ -614,7 +608,7 @@ color_norm_pred_r = make_color_norm(
 
 for name, value in surface_pred_bae.items():
     save_name = os.path.join(_SAVE_ADDR_PREFIX,
-                            'BAE_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(
+                            'pred_BAE_{}_bma_ls_{}_r_{}_bne_ls_{}_r_{}.png'.format(
                                 name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
                                 bne_gp_lengthscale, bne_gp_l2_regularizer))
 
@@ -645,7 +639,7 @@ color_norm_pred_r = make_color_norm(
 
 for name, value in surface_pred_bne_vo.items():
     save_name = os.path.join(_SAVE_ADDR_PREFIX,
-                            'BNEvo_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(
+                            'pred_BNEvo_{}_bma_ls_{}_r_{}_bne_ls_{}_r_{}.png'.format(
                                 name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
                                 bne_gp_lengthscale, bne_gp_l2_regularizer))
 
@@ -676,7 +670,7 @@ color_norm_pred_r = make_color_norm(
 
 for name, value in surface_pred_bne_vs.items():
     save_name = os.path.join(_SAVE_ADDR_PREFIX,
-                            'BNEvs_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(name, bma_gp_lengthscale, 
+                            'pred_BNEvs_{}_bma_ls_{}_r_{}_bne_ls_{}_r_{}.png'.format(name, bma_gp_lengthscale, 
                                 bma_gp_l2_regularizer, bne_gp_lengthscale, bne_gp_l2_regularizer))
 
     value = np.where(np.isnan(value), 0, value)
@@ -706,7 +700,7 @@ color_norm_var_r = make_color_norm(
 
 for name, value in surface_var_bae.items():
     save_name = os.path.join(_SAVE_ADDR_PREFIX,
-                            'var_BAE_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(
+                            'var_BAE_{}_bma_ls_{}_r_{}_bne_ls_{}_r_{}.png'.format(
                                 name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
                                 bne_gp_lengthscale, bne_gp_l2_regularizer))
     #value = np.where(np.isnan(value), 0, value)
@@ -732,7 +726,7 @@ color_norm_var_r = make_color_norm(
 
 for name, value in surface_var_bne_vo.items():
     save_name = os.path.join(_SAVE_ADDR_PREFIX,
-                            'var_BNEvo_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(
+                            'var_BNEvo_{}_bma_ls_{}_r_{}_bne_ls_{}_r_{}.png'.format(
                                 name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
                                 bne_gp_lengthscale, bne_gp_l2_regularizer))
     #value = np.where(np.isnan(value), 0, value)
@@ -758,7 +752,7 @@ color_norm_var_r = make_color_norm(
 
 for name, value in surface_var_bne_vs.items():
     save_name = os.path.join(_SAVE_ADDR_PREFIX,
-                            'var_BNEvs_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(
+                            'var_BNEvs_{}_bma_ls_{}_r_{}_bne_ls_{}_r_{}.png'.format(
                                 name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
                                 bne_gp_lengthscale, bne_gp_l2_regularizer))
     #value = np.where(np.isnan(value), 0, value)
