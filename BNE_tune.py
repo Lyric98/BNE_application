@@ -67,7 +67,7 @@ map_step_size=5e-4   # @param
 map_num_steps=10_000  # @param
 
 mcmc_step_size=1e-4 # @param
-mcmc_num_steps=5000 # @param
+mcmc_num_steps=1000 # @param
 
 mcmc_nchain=10 # @param
 mcmc_burnin=2_500 # @param
