@@ -85,7 +85,7 @@ bma_gp_lengthscale = opts.bma_gp_lengthscale#.75 # @param
 bma_gp_l2_regularizer = opts.bma_gp_l2_regularizer#0.1 # @param
 
 bma_n_samples_train = 100 # @param
-bma_n_samples_eval = 250 # @param
+bma_n_samples_eval = 500 #250 # @param
 bma_n_samples_test = 250 # @param
 bma_seed = 0 # @param
 
