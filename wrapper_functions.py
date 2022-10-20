@@ -40,7 +40,7 @@ os.getcwd()
 ## Default Configs
 # GP configs.
 y_noise_std = 0.1  # @param
-hidden_units = 128  # @param
+hidden_units = 1024  # @param
 lengthscale=1.  # @param
 l2_regularizer=0.1  # @param
 
@@ -1915,7 +1915,6 @@ def make_color_norm(color_data, method="percentile"):
         raise ValueError("Method {} is not supported".format(method))
 
     return BoundaryNorm(levels, 256)
-
 
 
 
