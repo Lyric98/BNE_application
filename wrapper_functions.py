@@ -1916,12 +1916,7 @@ def make_color_norm(color_data, method="percentile"):
 
     return BoundaryNorm(levels, 256)
 
+# Metrics
 
-
-
-
-
-
-
-
-
+def rmse(y_obs, y_pred):
+    return np.sqrt(np.mean((y_obs - y_pred) ** 2))
