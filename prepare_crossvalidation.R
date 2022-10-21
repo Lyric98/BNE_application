@@ -110,4 +110,4 @@ training51 %>%
   sf::st_as_sf(coords = c("lon", "lat"), crs=st_crs("epsg:4269")) %>% 
   plot()
 
-
+write.csv(training51, "./data/training_dataset/training51.csv", row.names = FALSE)
