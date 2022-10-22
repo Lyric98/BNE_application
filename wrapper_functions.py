@@ -759,7 +759,7 @@ def make_random_feature(X: tf.Tensor,
   b = b_dist(b_shape).numpy()
 
   multiplier = tf.sqrt(2./hidden_units)
-  random_feature = multiplier * tf.math.cos(tf.matmul(X, W) + b)
+  random_feature = multiplier * tf.math.cos(tf.matmul(X, W) + b) # activation function (default cos can change to Relu)
   
   if return_Wb:
     return W, b
