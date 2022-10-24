@@ -1,4 +1,5 @@
 ## libraries
+from distutils.log import debug
 from typing import Any, Callable, Dict, List, Optional, Union, Tuple
 
 import os
@@ -261,6 +262,7 @@ def run_posterior_inference(model_dist: tfd.Distribution,
   # Defines posterior log likelihood function, and also a 
   # randomly-sampled initial state from model prior.
   nchain = mcmc_config['nchain']
+  #print(mcmc_config["debug_mode"])
   init_state, target_log_prob_fn = prepare_mcmc(model_dist, Y, nchain=nchain)  
   
   if initialize_from_map:
@@ -274,10 +276,14 @@ def run_posterior_inference(model_dist: tfd.Distribution,
 
   # Run MCMC, shape (param_shape_0, param_shape_1, num_chains).
   print('Running MCMC:', end='\t')
+  if mcmc_config["debug_mode"]:
+    gp_w_samples, chain_samples, sampler_stat = run_mcmc(init_state=init_state,
+                             target_log_prob_fn=target_log_prob_fn,
+                             **mcmc_config)
+    return gp_w_samples, chain_samples, sampler_stat
   gp_w_samples, _ = run_mcmc(init_state=init_state,
                              target_log_prob_fn=target_log_prob_fn,
                              **mcmc_config)  
-  
   return gp_w_samples
 
 # @title Wrapper: run_base_models
