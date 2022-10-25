@@ -11,7 +11,7 @@ import numpy as np
 
 
 bma_gp_lengthscale = [0.1, 0.14, 0.13, 0.08, 0.05, 0.06, 0.04, 0.03]
-bma_gp_l2_regularizer = [.2, .15, .25, .1, .09, .07, .05]
+bma_gp_l2_regularizer = [.25, .2, .15, .25, .1, .09, .07, .05]
 #bne_gp_lengthscale = [0.2, 0.01]
 #bne_gp_l2_regularizer = [.1, .05]
 

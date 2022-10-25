@@ -227,23 +227,23 @@ bma_joint_samples = make_bma_samples(X_test1, None, base_preds_test,
 
 
 
-# Construct data from BMA samples, shapes (num_samples * num_data, ...)
-means_train_mcmc, X_train_mcmc, Y_train_mcmc = make_bma_samples(
-    X_train1, Y_train, base_preds_train, 
-    bma_weight_samples=bma_gp_w_samples[0],
-    bma_model_config=bma_model_config,
-    n_samples=bma_n_samples_train,
-    seed=bma_seed, 
-    prepare_mcmc_training=True)
+# # Construct data from BMA samples, shapes (num_samples * num_data, ...)
+# means_train_mcmc, X_train_mcmc, Y_train_mcmc = make_bma_samples(
+#     X_train1, Y_train, base_preds_train, 
+#     bma_weight_samples=bma_gp_w_samples[0],
+#     bma_model_config=bma_model_config,
+#     n_samples=bma_n_samples_train,
+#     seed=bma_seed, 
+#     prepare_mcmc_training=True)
 
-# Mean samples based on test data, shape (num_samples, num_data, num_output).
-# It is used to generate final examples in `make_bne_samples()`.
-means_test_mcmc = make_bma_samples(
-    X_test1, None, base_preds_test, 
-    bma_weight_samples=bma_gp_w_samples[0],
-    bma_model_config=bma_model_config,
-    n_samples=bma_n_samples_test,
-    seed=bma_seed)
+# # Mean samples based on test data, shape (num_samples, num_data, num_output).
+# # It is used to generate final examples in `make_bne_samples()`.
+# means_test_mcmc = make_bma_samples(
+#     X_test1, None, base_preds_test, 
+#     bma_weight_samples=bma_gp_w_samples[0],
+#     bma_model_config=bma_model_config,
+#     n_samples=bma_n_samples_test,
+#     seed=bma_seed)
 
 
 ### Define Model & Run MCMC
@@ -264,55 +264,55 @@ variance_prior_mean=0. # @param
 # mcmc_step_size=1e-2 # @param
 # mcmc_num_steps=10_000 # @param
 
-bne_gp_config = DEFAULT_GP_CONFIG.copy()
-bne_model_config = DEFAULT_BNE_CONFIG.copy()
+# bne_gp_config = DEFAULT_GP_CONFIG.copy()
+# bne_model_config = DEFAULT_BNE_CONFIG.copy()
 
-map_config = DEFAULT_MAP_CONFIG.copy()
-mcmc_config = DEFAULT_MCMC_CONFIG.copy()
+# map_config = DEFAULT_MAP_CONFIG.copy()
+# mcmc_config = DEFAULT_MCMC_CONFIG.copy()
 
 
-bne_gp_config.update(dict(lengthscale=bne_gp_lengthscale, 
-                          l2_regularizer=bne_gp_l2_regularizer))
-bne_model_config.update(dict(estimate_mean=eval(estimate_mean),
-                             variance_prior_mean=variance_prior_mean,
-                             activation='relu',
-                             **bne_gp_config))
+# bne_gp_config.update(dict(lengthscale=bne_gp_lengthscale, 
+#                           l2_regularizer=bne_gp_l2_regularizer))
+# bne_model_config.update(dict(estimate_mean=eval(estimate_mean),
+#                              variance_prior_mean=variance_prior_mean,
+#                              activation='relu',
+#                              **bne_gp_config))
 
-map_config.update(dict(learning_rate=map_step_size,
-                       num_steps=map_num_steps))
-mcmc_config.update(dict(step_size=mcmc_step_size, 
-                        num_steps=mcmc_num_steps,
-                       burnin=mcmc_burnin,
-                       nchain=mcmc_nchain,
-                       debug_mode=False))
+# map_config.update(dict(learning_rate=map_step_size,
+#                        num_steps=map_num_steps))
+# mcmc_config.update(dict(step_size=mcmc_step_size, 
+#                         num_steps=mcmc_num_steps,
+#                        burnin=mcmc_burnin,
+#                        nchain=mcmc_nchain,
+#                        debug_mode=False))
 
-# Construct posterior sampler.
-bne_prior, bne_gp_config = bne_model_dist(
-    inputs=X_train_mcmc,
-    mean_preds=means_train_mcmc,
-    **bne_model_config)
+# # Construct posterior sampler.
+# bne_prior, bne_gp_config = bne_model_dist(
+#     inputs=X_train_mcmc,
+#     mean_preds=means_train_mcmc,
+#     **bne_model_config)
 
-bne_model_config.update(bne_gp_config)
-print(f'prior model graph: {bne_prior.resolve_graph()}')
+# bne_model_config.update(bne_gp_config)
+# print(f'prior model graph: {bne_prior.resolve_graph()}')
 
 # Estimates GP weight posterior using MCMC.
-bne_gp_w_samples = run_posterior_inference(model_dist=bne_prior,
-                                           model_config=bne_gp_config,
-                                           Y=Y_train_mcmc,
-                                           map_config=map_config,
-                                           mcmc_config=mcmc_config,
-                                           initialize_from_map=True)
-# Generates the posterior sample for all model parameters. 
-bne_joint_samples = make_bne_samples(X_test1,
-                                     mean_preds=means_test_mcmc,
-                                     bne_model_config=bne_model_config,
-                                     bne_weight_samples=bne_gp_w_samples[0],
-                                     seed=bne_seed)
+# bne_gp_w_samples = run_posterior_inference(model_dist=bne_prior,
+#                                            model_config=bne_gp_config,
+#                                            Y=Y_train_mcmc,
+#                                            map_config=map_config,
+#                                            mcmc_config=mcmc_config,
+#                                            initialize_from_map=True)
+# # Generates the posterior sample for all model parameters. 
+# bne_joint_samples = make_bne_samples(X_test1,
+#                                      mean_preds=means_test_mcmc,
+#                                      bne_model_config=bne_model_config,
+#                                      bne_weight_samples=bne_gp_w_samples[0],
+#                                      seed=bne_seed)
 
 
 
-surface_pred_bne_vo = {k: np.mean(np.nan_to_num(bne_joint_samples[k]), axis=0) for k in ('y', 'mean_original', 'resid')}
-surface_var_bne_vo = {k: np.var(np.nan_to_num(bne_joint_samples[k]), axis=0) for k in ('y', 'mean_original', 'resid')}
+# surface_pred_bne_vo = {k: np.mean(np.nan_to_num(bne_joint_samples[k]), axis=0) for k in ('y', 'mean_original', 'resid')}
+# surface_var_bne_vo = {k: np.var(np.nan_to_num(bne_joint_samples[k]), axis=0) for k in ('y', 'mean_original', 'resid')}
 
 
 # ## Basic Plots
@@ -410,29 +410,29 @@ for base_model_name in base_model_names:
 
     
 
-# BNE vo
-color_norm_pred = make_color_norm(
-    #np.nan_to_num(list(surface_pred_bae.values())[:2][0]),
-    list(surface_pred_bne_vo.values())[:2],  
-    method="percentile")
+# # BNE vo
+# color_norm_pred = make_color_norm(
+#     #np.nan_to_num(list(surface_pred_bae.values())[:2][0]),
+#     list(surface_pred_bne_vo.values())[:2],  
+#     method="percentile")
 
-color_norm_pred_r = make_color_norm(
-    #np.nan_to_num(list(surface_pred_bae.values())[2:]),
-    list(surface_pred_bne_vo.values())[2],  
-    method="residual_percentile")
+# color_norm_pred_r = make_color_norm(
+#     #np.nan_to_num(list(surface_pred_bae.values())[2:]),
+#     list(surface_pred_bne_vo.values())[2],  
+#     method="residual_percentile")
 
 
-for name, value in surface_pred_bne_vo.items():
-    save_name = os.path.join(_SAVE_ADDR_PREFIX,
-                            'BNEvo_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(
-                                name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
-                                bne_gp_lengthscale, bne_gp_l2_regularizer))
+# for name, value in surface_pred_bne_vo.items():
+#     save_name = os.path.join(_SAVE_ADDR_PREFIX,
+#                             'BNEvo_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(
+#                                 name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
+#                                 bne_gp_lengthscale, bne_gp_l2_regularizer))
 
-    value = np.where(np.isnan(value), 0, value)
-    color_norm = posterior_heatmap_2d(value, X=coordinate, X_monitor=monitors,
-                                                  cmap='RdYlGn_r',
-                    norm= color_norm_pred_r if name=='resid' else color_norm_pred,
-                                      save_addr=save_name)
+#     value = np.where(np.isnan(value), 0, value)
+#     color_norm = posterior_heatmap_2d(value, X=coordinate, X_monitor=monitors,
+#                                                   cmap='RdYlGn_r',
+#                     norm= color_norm_pred_r if name=='resid' else color_norm_pred,
+#                                       save_addr=save_name)
                     #norm_method="percentile",
                     #save_addr='')
     
@@ -499,27 +499,27 @@ for name, value in surface_pred_bne_vo.items():
 # In[ ]:
 
 
-# BNE vo
-color_norm_var = make_color_norm(
-    list(surface_var_bne_vo.values())[:2], 
-    method="percentile")
+# # BNE vo
+# color_norm_var = make_color_norm(
+#     list(surface_var_bne_vo.values())[:2], 
+#     method="percentile")
 
-color_norm_var_r = make_color_norm(
-    list(surface_var_bne_vo.values())[2], 
-    method="percentile")
+# color_norm_var_r = make_color_norm(
+#     list(surface_var_bne_vo.values())[2], 
+#     method="percentile")
 
 
-for name, value in surface_var_bne_vo.items():
-    save_name = os.path.join(_SAVE_ADDR_PREFIX,
-                            'var_BNEvo_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(
-                                name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
-                                bne_gp_lengthscale, bne_gp_l2_regularizer))
-    #value = np.where(np.isnan(value), 0, value)
-    color_norm = posterior_heatmap_2d(value, X=coordinate, X_monitor=monitors,
-                                cmap='inferno_r',
-                                norm= color_norm_var_r if name=='resid' else color_norm_var,
-                                #norm_method="percentile",
-                                save_addr=save_name)
+# for name, value in surface_var_bne_vo.items():
+#     save_name = os.path.join(_SAVE_ADDR_PREFIX,
+#                             'var_BNEvo_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(
+#                                 name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
+#                                 bne_gp_lengthscale, bne_gp_l2_regularizer))
+#     #value = np.where(np.isnan(value), 0, value)
+#     color_norm = posterior_heatmap_2d(value, X=coordinate, X_monitor=monitors,
+#                                 cmap='inferno_r',
+#                                 norm= color_norm_var_r if name=='resid' else color_norm_var,
+#                                 #norm_method="percentile",
+#                                 save_addr=save_name)
 
 
 # In[ ]:
