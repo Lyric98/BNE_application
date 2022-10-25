@@ -554,6 +554,7 @@ print("RMSE BMA: ", np.mean(rmse_bma), np.std(rmse_bma))
 lr_s = ['', str(np.mean(rmse_lr)), str(np.std(rmse_lr))]
 bma_s = [ str(np.mean(rmse_bma)), str(np.std(rmse_bma))]
 
-with open('readme.txt', 'a') as f:
+
+with open('test.txt', 'a') as f:
     f.write('\n')
-    f.write(''.join('BMA length: '+ str(bma_gp_lengthscale)+ " l2: "+str(bma_gp_l2_regularizer) + "mean and std: "+ str(bma_s)))
+    f.write(''.join(str(bma_gp_lengthscale)+ " "+str(bma_gp_l2_regularizer) + " "+ str(np.mean(rmse_bma))+ " "+str(np.std(rmse_bma))))

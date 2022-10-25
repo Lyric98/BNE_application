@@ -10,8 +10,8 @@ from typing import Dict, List
 import numpy as np
 
 
-bma_gp_lengthscale = [0.1, 0.14, 0.13, 0.08, 0.05, 0.06, 0.04, 0.03]
-bma_gp_l2_regularizer = [.25, .2, .15, .25, .1, .09, .07, .05]
+bma_gp_lengthscale = [.04, .045, .05, .055, .056, .057, .058, .059, .06, .061, .062, .063, ,.064, .065, .066, .067, .068, .069, .07, .08, .09, .1, .15, .2, .25, .3, .5]
+bma_gp_l2_regularizer = [.25, .2, .15, .14, .13, .12, .11, .1, .09, .08, .07, .06, .05, .04]
 #bne_gp_lengthscale = [0.2, 0.01]
 #bne_gp_l2_regularizer = [.1, .05]
 
