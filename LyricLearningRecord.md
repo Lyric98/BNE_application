@@ -8,6 +8,12 @@ git remote -v (检查是否连上)
 git pull origin master
 git branch -a
 ```
+git 撤销commit： https://www.cnblogs.com/lfxiao/p/9378763.html 
+```
+git reset --soft HEAD^ #HEAD^的意思是上一个版本，也可以写成HEAD~1
+                      #如果你进行了2次commit，想都撤回，可以使用HEAD~2
+git log 查询commit
+```
 
 ## 环境
 conda create -n your_env_name python=x.x Python创建虚拟环境
