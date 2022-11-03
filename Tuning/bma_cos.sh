@@ -8,4 +8,4 @@
 #SBATCH --mem=80000
 #SBATCH --output=%j.out
 
-python bma_cos.py --ls 1 --l2 0.01 
+python BMA_cv_relu208.py --ls 1 --l2 0.01 
