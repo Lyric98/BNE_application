@@ -77,8 +77,6 @@ bne_seed = 0 # @param
 
 # ### Read training/prediction data
 
-# In[5]:
-
 
 training_eastMA = pd.read_csv('../data/training_dataset/training_eastMA.csv')
 training_eastMA_noMI = training_eastMA[:51]
@@ -95,9 +93,6 @@ print("train latitude max and min", training_eastMA["lat"].max(),training_eastMA
 training51= pd.read_csv('../data/training_dataset/training51.csv')
 
 
-# In[6]:
-
-
 # standardize
 X_train1 = np.asarray(training_eastMA_noMI[["lon", "lat"]].values.tolist()).astype(np.float32)
 X_test1 = np.asarray(base_model_predictions_eastMA[["lon", "lat"]].values.tolist()).astype(np.float32)
@@ -112,9 +107,6 @@ Y_train = np.expand_dims(training_eastMA_noMI["aqs"], 1).astype(np.float32)
 #Y_test = np.expand_dims(base_model_predictions_eastMA["pred_av"], 1).astype(np.float32)
 
 print("2011 center and scale: ", X_centr, X_scale)
-
-
-# In[7]:
 
 
 base_model_names = ["pred_av", "pred_gs", "pred_caces"]
@@ -146,7 +138,7 @@ mcmc_config.update(dict(step_size=mcmc_step_size,
 
 
 ref_model = LinearRegression()
-kf = KFold(n_splits=10, random_state=bma_seed, shuffle=True) 
+kf = KFold(n_splits=10, random_state=bma_seed, shuffle=True)) 
 
 rmse_lr = []
 rmse_bma = []
@@ -161,7 +153,7 @@ for train_index, test_index in kf.split(X_train1):
       Y_pred = ref_model.predict(X_te)
       rmse_lr.append(rmse(Y_te, Y_pred))
       
-
+      
       base_preds_tr, base_preds_te = base_preds_train.numpy()[train_index], base_preds_train.numpy()[test_index]
       print(X_tr.shape, X_te.shape, Y_tr.shape, Y_te.shape, base_preds_tr.shape, base_preds_te.shape)
 
