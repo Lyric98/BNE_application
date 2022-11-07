@@ -32,6 +32,14 @@ jupyter notebook 转换成 python script
 jupyter nbconvert --to script
 ```
 
+## Linux 文件相关
+Linux下删除指定文件夹下指定后缀名的文件: 命令有点危险，可以先执行前半段，看看是不是你要删除的文件, 然后再整条执行
+
+```
+find . -name "*.out"  
+find . -name "*.out"| xargs rm
+```
+
 
 ## 引用同地址的文件出现 module not found error
 ```
