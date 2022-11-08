@@ -32,6 +32,7 @@ if __name__ == '__main__':
 
 
 from wrapper_functions import *
+from ensemble import *
 
 training_eastMA = pd.read_csv('../data/training_dataset/training_eastMA.csv')
 training_eastMA_noMI = training_eastMA[:51]

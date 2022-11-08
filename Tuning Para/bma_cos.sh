@@ -4,9 +4,8 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=12
-#SBATCH --time=01:00:00
+#SBATCH --time=08:00:00
 #SBATCH --mem=80000
 #SBATCH --output=%j.out
 
-python CVCV.py --ls 0.275  --l2 1.0 
-
+python BMA_cv_relu208.py --ls 0.275  --l2 1.0 
