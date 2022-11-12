@@ -75,7 +75,12 @@ for(i in 1:10){
                      s(lon, lat, by=pred_caces, k=4),
                    data = trainData)
   preds_test <- stats::predict(gam_model, newdata =testData, interval="prediction") %>% as.numeric()
-  #preds_test  <- predict(gam_model, newdata = testing(splits)) %>% as.numeric()
+  
+  pred_ci <- stats::predict(gam_model, newdata = testData, se.fit = TRUE, type = "response") %>% 
+    as.data.frame() %>% 
+    mutate(preds = preds_test) %>% 
+    mutate(preds_lower = preds - 1.96 * se.fit, preds_upper = preds + 1.96 * se.fit)
+  
   rmse = sqrt(mean((testData$aqs - preds_test)^2))
   rmse_gam[i] = rmse
 }
