@@ -156,7 +156,7 @@ base = importr('base')
 #ms = importr('MSGARCH')
 # import R's "utils" package
 utils = importr('utils')
-
+utils.install_packages('ciTools', repos="https://cloud.r-project.org")
 
 with localconverter(ro.default_converter + pandas2ri.converter):
   r_from_pd_df = ro.conversion.py2rpy(training_eastMA_noMI)
@@ -168,7 +168,7 @@ ciTools = importr('ciTools')
 
 
 ref_model = LinearRegression()
-kf = KFold(n_splits=51, random_state=bma_seed, shuffle=True) 
+kf = KFold(n_splits=10, random_state=bma_seed, shuffle=True) 
 
 rmse_lr = []
 rmse_bma = []
@@ -212,26 +212,35 @@ for train_index, test_index in kf.split(X_train1):
       #print(rmse_gam)
 
       # build model & run MCMC
-    #   bma_prior, bma_gp_config = bma_dist(X_tr, 
-    #                                 base_preds_tr, 
-    #                                 **bma_model_config)
+      bma_prior, bma_gp_config = bma_dist(X_tr, 
+                                    base_preds_tr, 
+                                    **bma_model_config)
 
-    #   bma_model_config.update(bma_gp_config)
+      bma_model_config.update(bma_gp_config)
 
 
-    #   bma_gp_w_samples = run_posterior_inference(model_dist=bma_prior, 
-    #                                        model_config=bma_model_config,
-    #                                        Y=Y_tr, 
-    #                                        map_config=map_config,
-    #                                        mcmc_config=mcmc_config)
+      bma_gp_w_samples = run_posterior_inference(model_dist=bma_prior, 
+                                           model_config=bma_model_config,
+                                           Y=Y_tr, 
+                                           map_config=map_config,
+                                           mcmc_config=mcmc_config)
 
-    #   y_pred = bma_joint_samples['y']
-    #   # compute predictive interval
+      bma_joint_samples = make_bma_samples(X_te, None, base_preds_te, 
+                                     bma_weight_samples=bma_gp_w_samples[0],
+                                     bma_model_config=bma_model_config,
+                                     n_samples=bma_n_samples_eval, 
+                                     seed=bne_seed,
+                                     y_samples_only=False)
+    
 
-    #   y_pred = tf.reduce_mean(y_pred, axis=0)
+      y_pred = bma_joint_samples['y']
+      print(bma_joint_samples)
+      # compute predictive interval
 
-    #   rmse_bma.append(rmse(Y_te, y_pred))
-    #   print(rmse_bma)  
+      y_pred = tf.reduce_mean(y_pred, axis=0)
+
+      rmse_bma.append(rmse(Y_te, y_pred))
+      #print(rmse_bma)  
 
 #       means_tr_mcmc, X_tr_mcmc, Y_tr_mcmc = make_bma_samples(
 #         X_tr, Y_tr, base_preds_tr, 
@@ -592,6 +601,6 @@ for train_index, test_index in kf.split(X_train1):
 #     f.write('\n')
 #     f.write(''.join(str(bma_gp_lengthscale)+ " "+str(bma_gp_l2_regularizer) + " "+ str(np.mean(rmse_bma))+ " "+str(np.std(rmse_bma))))
 
-
-print("rmse_lr:", rmse_lr, "rmse_gam:", rmse_gam)
-print("rmse_lr_mean:", np.mean(rmse_lr),"\n", "rmse_lr_std",  np.std(rmse_lr),"\n", "rmse_gam_mean:", np.mean(rmse_gam), "\n", "rmse_gam_std:", np.std(rmse_gam))
+print("rmse_lr:", rmse_lr, "rmse_gam:", rmse_gam, "rmse_bma:", rmse_bma)
+print("rmse_lr_mean:", np.mean(rmse_lr),"\n", "rmse_lr_std",  np.std(rmse_lr),"\n", "rmse_gam_mean:", np.mean(rmse_gam), "\n", "rmse_gam_std:", np.std(rmse_gam), "\n", "rmse_bma_mean:", np.mean(rmse_bma), "\n", "rmse_bma_std:", np.std(rmse_bma))
+print("coverage gam:", coverage_gam, "coverage lr:", coverage_lr)

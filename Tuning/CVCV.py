@@ -32,7 +32,6 @@ if __name__ == '__main__':
 
 
 from wrapper_functions import *
-from ensemble import *
 
 training_eastMA = pd.read_csv('../data/training_dataset/training_eastMA.csv')
 training_eastMA_noMI = training_eastMA[:51]
@@ -63,7 +62,7 @@ map_step_size=5e-4   # @param
 map_num_steps=10_000  # @param
 
 mcmc_step_size=1e-4 # @param
-mcmc_num_steps=1000 # @param
+mcmc_num_steps=10_000 # @param #Integer number of Markov chain draws.
 
 mcmc_nchain=10 # @param
 mcmc_burnin=2_500 # @param
@@ -77,7 +76,7 @@ bma_gp_lengthscale = opts.ls # @param
 bma_gp_l2_regularizer = opts.l2 # @param
 
 bma_n_samples_train = 100 # @param
-bma_n_samples_eval = 250 # @param
+bma_n_samples_eval = 1000 # @param
 bma_n_samples_test = 250 # @param
 bma_seed = 0 # @param
 
@@ -106,9 +105,9 @@ mcmc_config.update(dict(step_size=mcmc_step_size,
                        nchain=mcmc_nchain,
                        debug_mode=False))
 
+print("BMA model config: ", bma_model_config, "\n", "MAP config: ", map_config, "\n", "MCMC config: ", mcmc_config)
 
-
-# find the index of max and min  for lon and lat
+find the index of max and min  for lon and lat
 min_index_lon = training_eastMA_noMI[['lon']].idxmin().values.tolist()
 max_index_lon = training_eastMA_noMI[['lon']].idxmax().values.tolist()
 min_index_lat = training_eastMA_noMI[['lat']].idxmin().values.tolist()
@@ -117,11 +116,11 @@ max_index_lat = training_eastMA_noMI[['lat']].idxmax().values.tolist()
 edge_list = min_index_lon + max_index_lon + min_index_lat + max_index_lat
 # exclude edge_list index from X_train1
 train_wo_edge = training_eastMA_noMI[~np.isin(np.arange(len(X_train1)), edge_list)]
-ref_model = LinearRegression()
+# ref_model = LinearRegression()
 kf = KFold(n_splits=10, shuffle=True, random_state=bma_seed)
 
-rmse_lr = []
-rmse_bma = []
+# rmse_lr = []
+# rmse_bma = []
 rmse_gam = []
 
 # concatenate train_wo_edge and edge_list index from training_eastMA_noMI
@@ -135,25 +134,25 @@ for train_index, test_index in kf.split(train_new_order[:-4]):
     base_preds_tr, base_preds_te = base_preds_train.numpy()[train_index], base_preds_train.numpy()[test_index]
     print(X_tr.shape, X_te.shape, Y_tr.shape, Y_te.shape, base_preds_tr.shape, base_preds_te.shape)
  
-    # Ref: linear regression
-    ref_model.fit(X_tr, Y_tr)
-    Y_pred = ref_model.predict(X_te)
-    rmse_lr.append(rmse(Y_te, Y_pred))
-    #print(rmse_lr)
+    # # Ref: linear regression
+    # ref_model.fit(X_tr, Y_tr)
+    # Y_pred = ref_model.predict(X_te)
+    # rmse_lr.append(rmse(Y_te, Y_pred))
+    # #print(rmse_lr)
 
-    #GMA
-    ens_feature = np.asarray(list(base_preds_tr))
-    term_list = [s(dim_index) for dim_index in range(ens_feature.shape[1])]
-    term_list += [te(*list(ens_feature.shape[1] + np.array(range(X_tr.shape[1]))))]
-    gam_feature_terms = TermList(*term_list)
+    # #GMA
+    # ens_feature = np.asarray(list(base_preds_tr))
+    # term_list = [s(dim_index) for dim_index in range(ens_feature.shape[1])]
+    # term_list += [te(*list(ens_feature.shape[1] + np.array(range(X_tr.shape[1]))))]
+    # gam_feature_terms = TermList(*term_list)
 
-    gam_X_tr = np.concatenate([X_tr, base_preds_tr], axis=1)
-    gam_X_te = np.concatenate([X_te, base_preds_te], axis=1)
-    ref_gam = LinearGAM(gam_feature_terms)
-    #ref_gam = LinearGAM(te(0, 1, 2) + te(0, 1, 3) + te(0,1,4))
-    gam = ref_gam.fit(gam_X_tr, Y_tr)
-    Y_pred = gam.predict(gam_X_te)
-    rmse_gam.append(rmse(Y_te, Y_pred))
+    # gam_X_tr = np.concatenate([X_tr, base_preds_tr], axis=1)
+    # gam_X_te = np.concatenate([X_te, base_preds_te], axis=1)
+    # ref_gam = LinearGAM(gam_feature_terms)
+    # #ref_gam = LinearGAM(te(0, 1, 2) + te(0, 1, 3) + te(0,1,4))
+    # gam = ref_gam.fit(gam_X_tr, Y_tr)
+    # Y_pred = gam.predict(gam_X_te)
+    # rmse_gam.append(rmse(Y_te, Y_pred))
 
     #BMA
    
@@ -184,8 +183,8 @@ for train_index, test_index in kf.split(train_new_order[:-4]):
 
     rmse_bma.append(rmse(Y_te, y_pred))
     #print(rmse_bma)
-print('RMSE of LR:', np.mean(rmse_lr)), print('RMSE of GAM:', np.mean(rmse_gam)), print('RMSE of BMA:', np.mean(rmse_bma))
-print(rmse_lr, rmse_gam, rmse_bma)
+#print('RMSE of LR:', np.mean(rmse_lr)), print('RMSE of GAM:', np.mean(rmse_gam)), print('RMSE of BMA:', np.mean(rmse_bma))
+#print(rmse_lr, rmse_gam, rmse_bma)
 
 with open('cosine_rmse2.txt', 'a') as f:
     f.write('\n')
