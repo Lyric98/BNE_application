@@ -39,6 +39,10 @@ Linux下删除指定文件夹下指定后缀名的文件: 命令有点危险，�
 find . -name "*.out"  
 find . -name "*.out"| xargs rm
 ```
+FASRC cancel job
+```
+scancel --name=train.sh
+```
 
 
 ## 引用同地址的文件出现 module not found error

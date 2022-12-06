@@ -719,6 +719,7 @@ def make_random_feature(X: tf.Tensor,
                         hidden_units: int = 512, 
                         seed: int = 0, 
                         return_Wb: bool = False, 
+                        use_orf: bool = False,
                         activation: str = 'cosine',
                         **unused_kwargs) -> Union[tf.Tensor, Tuple[tf.Tensor]]:
   """Makes random feature for scalable RBF kernel approximation.
@@ -763,8 +764,11 @@ def make_random_feature(X: tf.Tensor,
 
   # Sample random features.
   tf.random.set_seed(seed)
-  W_dist = ed.initializers.OrthogonalRandomFeatures(stddev=1.)
-  b_dist = tf.initializers.RandomUniform(0, 2*np.pi)
+  W_init = (ed.initializers.OrthogonalRandomFeatures if use_orf
+            else tf.initializers.RandomNormal)
+
+  W_dist = W_init(stddev=1., seed=seed)
+  b_dist = tf.initializers.RandomUniform(0, 2*np.pi, seed=seed)
   W = W_dist(W_shape).numpy()
   b = b_dist(b_shape).numpy()
 
