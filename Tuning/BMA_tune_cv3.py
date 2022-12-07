@@ -138,80 +138,121 @@ base_preds_train = tf.stack([training_eastMA_noMI[base_model_name].astype(np.flo
 base_preds_test = tf.stack([base_model_predictions_eastMA[base_model_name].astype(np.float32) for base_model_name in base_model_names], axis=-1)
 #base_preds_test
 
-coverage_lr = 0
-coverage_gam = 0
-coverage_bma = 0
+#coverage_lr = 0
+#coverage_gam = 0
+#coverage_bma = 0
 
 
-import rpy2
+#import rpy2
 #from rpy2.robjects import pandas2ri
-from rpy2 import robjects as ro
-from rpy2.robjects.packages import importr
-import pandas as pd
-import rpy2.robjects as ro
-from rpy2.robjects import pandas2ri, r
-from rpy2.robjects.conversion import localconverter
+#from rpy2 import robjects as ro
+#from rpy2.robjects.packages import importr
+#import pandas as pd
+#import rpy2.robjects as ro
+#from rpy2.robjects import pandas2ri, r
+#from rpy2.robjects.conversion import localconverter
 # import R's "base" package
-base = importr('base')
+#base = importr('base')
 #ms = importr('MSGARCH')
 # import R's "utils" package
-utils = importr('utils')
-utils.install_packages('ciTools', repos="https://cloud.r-project.org")
+#utils = importr('utils')
+#utils.install_packages('ciTools', repos="https://cloud.r-project.org")
 
-with localconverter(ro.default_converter + pandas2ri.converter):
-  r_from_pd_df = ro.conversion.py2rpy(training_eastMA_noMI)
-
-
-mgcv  = importr('mgcv')
-stats = importr('stats')
-ciTools = importr('ciTools')
+#with localconverter(ro.default_converter + pandas2ri.converter):
+#  r_from_pd_df = ro.conversion.py2rpy(training_eastMA_noMI)
 
 
-ref_model = LinearRegression()
-kf = KFold(n_splits=10, random_state=bma_seed, shuffle=True) 
+#mgcv  = importr('mgcv')
+#stats = importr('stats')
+#ciTools = importr('ciTools')
 
-rmse_lr = []
-rmse_bma = []
-rmse_gam = []
 
-for train_index, test_index in kf.split(X_train1):
-      #print("Train:", train_index, "Validation:",test_index)
-      X_tr, X_te = X_train1[train_index], X_train1[test_index] 
-      Y_tr, Y_te = Y_train[train_index], Y_train[test_index]
+#ref_model = LinearRegression()
+#kf = KFold(n_splits=10, random_state=bma_seed, shuffle=True) 
+
+# concetenate the index
+#edge_list = [44]
+# exclude edge_list index from X_train1
+#train_wo_edge = training_eastMA_noMI[~np.isin(np.arange(len(X_train1)), edge_list)]
+
+
+
+
+
+#rmse_lr = []
+#rmse_bma = []
+#rmse_gam = []
+
+
+#train_new_order = pd.concat([train_wo_edge, training_eastMA_noMI.iloc[edge_list]])
+# for train_index, test_index in kf.split(X_train1):
+#       #train_index = train_index.tolist() + edge_list
+
+#       X_tr, X_te = X_train1[train_index], X_train1[test_index] 
+#       Y_tr, Y_te = Y_train[train_index], Y_train[test_index]
       
-      base_preds_tr, base_preds_te = base_preds_train.numpy()[train_index], base_preds_train.numpy()[test_index]
-      print(X_tr.shape, X_te.shape, Y_tr.shape, Y_te.shape, base_preds_tr.shape, base_preds_te.shape)
+#       base_preds_tr, base_preds_te = base_preds_train.numpy()[train_index], base_preds_train.numpy()[test_index]
+#       print(X_tr.shape, X_te.shape, Y_tr.shape, Y_te.shape, base_preds_tr.shape, base_preds_te.shape)
+    
+#       #r_dat_py = training_eastMA_noMI
+#       #r_dat_py[['lon', 'lat']] = X_train1
+      
+#       #with localconverter(ro.default_converter + pandas2ri.converter):
+#       #      r_tr = ro.conversion.py2rpy(r_dat_py.iloc[train_index])
+#       #      r_te = ro.conversion.py2rpy(r_dat_py.iloc[test_index])
 
-      # build model & run MCMC
-      bma_prior, bma_gp_config = bma_dist(X_tr, 
-                                    base_preds_tr, 
-                                    **bma_model_config)
+#       # Ref: lr
+#       #lr_model = stats.lm(ro.Formula('aqs~pred_av+pred_gs+pred_caces'), data=r_tr)
+#       #l = stats.predict(lr_model, newdata =r_te, interval = 'prediction')
+#       #py_l = np.asanyarray(l).reshape(-1, 3)
+#       #py_l = pd.DataFrame(py_l, columns=['pred', 'l', 'u'])
+#       #lr_ci_l, lr_ci_u = py_l['l'], py_l['u']
+#       #l = ciTools.add_pi(r_te, lr_model)
+#       #lr_pred = l[7]
+#       #lr_ci_l, lr_ci_u = l[8], l[9]
+#       #coverage_lr += np.sum([(Y_te[i] > lr_ci_l[i]) & (Y_te[i] < lr_ci_u[i]) for i in range(len(Y_te))])
+#       #rmse_lr.append(rmse(Y_te, np.asanyarray(lr_pred).reshape(-1,1)))
 
-      bma_model_config.update(bma_gp_config)
+#       # Ref: GAM
+#       #df = training_eastMA_noMI.iloc[train_index]
+#       #gam_model = mgcv.gam(ro.Formula('aqs ~ s(lon, lat, by=pred_av, k=4) + s(lon, lat,by=pred_gs, k=4) +s(lon, lat, by=pred_caces, k=4)'), data=r_tr)
+#       #a= ciTools.add_pi(r_te, gam_model)
+#       #Y_pred = a[7]
+#       #gam_ci_l, gam_ci_u = a[8], a[9]
+#       #coverage_gam += np.sum([(Y_te[i] > gam_ci_l[i]) & (Y_te[i] < gam_ci_u[i]) for i in range(len(Y_te))])
+#       #rmse_gam.append(rmse(Y_te, np.asanyarray(Y_pred).reshape(-1,1)))
+#       #print(rmse_gam)
+
+#       # build model & run MCMC
+#       bma_prior, bma_gp_config = bma_dist(X_tr, 
+#                                     base_preds_tr, 
+#                                     **bma_model_config)
+
+#       bma_model_config.update(bma_gp_config)
 
 
-      bma_gp_w_samples = run_posterior_inference(model_dist=bma_prior, 
-                                           model_config=bma_model_config,
-                                           Y=Y_tr, 
-                                           map_config=map_config,
-                                           mcmc_config=mcmc_config)
+#       bma_gp_w_samples = run_posterior_inference(model_dist=bma_prior, 
+#                                            model_config=bma_model_config,
+#                                            Y=Y_tr, 
+#                                            map_config=map_config,
+#                                            mcmc_config=mcmc_config)
 
-      bma_joint_samples = make_bma_samples(X_te, None, base_preds_te, 
-                                     bma_weight_samples=bma_gp_w_samples[0],
-                                     bma_model_config=bma_model_config,
-                                     n_samples=bma_n_samples_eval, 
-                                     seed=bne_seed,
-                                     y_samples_only=False)
+#       bma_joint_samples = make_bma_samples(X_te, None, base_preds_te, 
+#                                      bma_weight_samples=bma_gp_w_samples[0],
+#                                      bma_model_config=bma_model_config,
+#                                      n_samples=bma_n_samples_eval, 
+#                                      seed=bne_seed,
+#                                      y_samples_only=False)
     
 
-      y_pred = bma_joint_samples['y']
-      print(bma_joint_samples)
-      # compute predictive interval
+#       y_pred = bma_joint_samples['y']
+#       #print(bma_joint_samples)
+#       # compute predictive interval
 
-      y_pred = tf.reduce_mean(y_pred, axis=0)
+#       y_pred = tf.reduce_mean(y_pred, axis=0)
 
-      rmse_bma.append(rmse(Y_te, y_pred))
-      
+#       rmse_bma.append(rmse(Y_te, y_pred))
+      #print(rmse_bma)  
 
 #       means_tr_mcmc, X_tr_mcmc, Y_tr_mcmc = make_bma_samples(
 #         X_tr, Y_tr, base_preds_tr, 
@@ -272,52 +313,52 @@ for train_index, test_index in kf.split(X_train1):
 # print("RMSE BMA: ", np.mean(rmse_bma), np.std(rmse_bma))
 
 
-# bma_prior, bma_gp_config = bma_dist(X_train1, 
-#                                     base_preds_train, 
-#                                     **bma_model_config)
+bma_prior, bma_gp_config = bma_dist(X_train1, 
+                                    base_preds_train, 
+                                    **bma_model_config)
 
-# bma_model_config.update(bma_gp_config)
+bma_model_config.update(bma_gp_config)
 
-# # Check if the model graph is specified correctly.
-# bma_prior.resolve_graph()
-
-
-# print(bma_model_config)
+# Check if the model graph is specified correctly.
+bma_prior.resolve_graph()
 
 
-# bma_gp_w_samples = run_posterior_inference(model_dist=bma_prior, 
-#                                            model_config=bma_model_config,
-#                                            Y=Y_train, 
-#                                            map_config=map_config,
-#                                            mcmc_config=mcmc_config)
+print(bma_model_config)
 
 
-# bma_joint_samples = make_bma_samples(X_test1, None, base_preds_test, 
-#                                      bma_weight_samples=bma_gp_w_samples[0],
-#                                      bma_model_config=bma_model_config,
-#                                      n_samples=bma_n_samples_eval, 
-#                                      seed=bne_seed,
-#                                      y_samples_only=False)
+bma_gp_w_samples = run_posterior_inference(model_dist=bma_prior, 
+                                           model_config=bma_model_config,
+                                           Y=Y_train, 
+                                           map_config=map_config,
+                                           mcmc_config=mcmc_config)
+
+
+bma_joint_samples = make_bma_samples(X_test1, None, base_preds_test, 
+                                     bma_weight_samples=bma_gp_w_samples[0],
+                                     bma_model_config=bma_model_config,
+                                     n_samples=bma_n_samples_eval, 
+                                     seed=bne_seed,
+                                     y_samples_only=False)
 
 
 
-# # Construct data from BMA samples, shapes (num_samples * num_data, ...)
-# means_train_mcmc, X_train_mcmc, Y_train_mcmc = make_bma_samples(
-#     X_train1, Y_train, base_preds_train, 
-#     bma_weight_samples=bma_gp_w_samples[0],
-#     bma_model_config=bma_model_config,
-#     n_samples=bma_n_samples_train,
-#     seed=bma_seed, 
-#     prepare_mcmc_training=True)
+# Construct data from BMA samples, shapes (num_samples * num_data, ...)
+means_train_mcmc, X_train_mcmc, Y_train_mcmc = make_bma_samples(
+    X_train1, Y_train, base_preds_train, 
+    bma_weight_samples=bma_gp_w_samples[0],
+    bma_model_config=bma_model_config,
+    n_samples=bma_n_samples_train,
+    seed=bma_seed, 
+    prepare_mcmc_training=True)
 
-# # Mean samples based on test data, shape (num_samples, num_data, num_output).
-# # It is used to generate final examples in `make_bne_samples()`.
-# means_test_mcmc = make_bma_samples(
-#     X_test1, None, base_preds_test, 
-#     bma_weight_samples=bma_gp_w_samples[0],
-#     bma_model_config=bma_model_config,
-#     n_samples=bma_n_samples_test,
-#     seed=bma_seed)
+# Mean samples based on test data, shape (num_samples, num_data, num_output).
+# It is used to generate final examples in `make_bne_samples()`.
+means_test_mcmc = make_bma_samples(
+    X_test1, None, base_preds_test, 
+    bma_weight_samples=bma_gp_w_samples[0],
+    bma_model_config=bma_model_config,
+    n_samples=bma_n_samples_test,
+    seed=bma_seed)
 
 
 ### Define Model & Run MCMC
@@ -329,249 +370,234 @@ for train_index, test_index in kf.split(X_train1):
 
 
 
-
-
-# surface_pred_bne_vo = {k: np.mean(np.nan_to_num(bne_joint_samples[k]), axis=0) for k in ('y', 'mean_original', 'resid')}
-# surface_var_bne_vo = {k: np.var(np.nan_to_num(bne_joint_samples[k]), axis=0) for k in ('y', 'mean_original', 'resid')}
-
-
 # ## Basic Plots
 
 
-#_DATA_ADDR_PREFIX = "./example/data"
-# Tuning Parameters
-# BMA_lenthscale = bma_gp_lengthscale
-# #BNE_lenthscale = bne_gp_lengthscale
-# BMA_L2 = bma_gp_l2_regularizer
-# #BNE_L2 = bne_gp_l2_regularizer
-# _SAVE_ADDR_PREFIX = "./pic/BMA_lenthscale_{}_L2_{}".format(BMA_lenthscale, BMA_L2)
+_DATA_ADDR_PREFIX = "./example/data"
 
-# path=_SAVE_ADDR_PREFIX
-# isExists=os.path.exists(path) #判断路径是否存在，存在则返回true
+BMA_lenthscale = bma_gp_lengthscale
+#BNE_lenthscale = bne_gp_lengthscale
+BMA_L2 = bma_gp_l2_regularizer
+#BNE_L2 = bne_gp_l2_regularizer
+_SAVE_ADDR_PREFIX = "./pic/BMA_lenthscale_{}_L2_{}".format(BMA_lenthscale, BMA_L2)
 
-# if not isExists:
-#     os.makedirs(path)
+path=_SAVE_ADDR_PREFIX
+isExists=os.path.exists(path) #判断路径是否存在，存在则返回true
 
-
-
-
-# coordinate = np.asarray(base_model_predictions_eastMA[["lon", "lat"]].values.tolist()).astype(np.float32)
-# monitors = np.asarray(training_eastMA_noMI[["lon", "lat"]].values.tolist()).astype(np.float32)
-# base_model_names = ["pred_av", "pred_gs", "pred_caces"]
-
-# base_model_predictions_eastMA[["pred_av", "pred_gs", "pred_caces"]] = np.where(np.isnan(base_model_predictions_eastMA[["pred_av", "pred_gs", "pred_caces"]]), 0, base_model_predictions_eastMA[["pred_av", "pred_gs", "pred_caces"]])
-# color_norm_base = make_color_norm(
-#     base_model_predictions_eastMA[["pred_av", "pred_gs", "pred_caces"]],   
-#     method="percentile")
+if not isExists:
+    os.makedirs(path)
 
 
 
-# ### 2. The predictive surface of individual BNE gp weights
 
+coordinate = np.asarray(base_model_predictions_eastMA[["lon", "lat"]].values.tolist()).astype(np.float32)
+monitors = np.asarray(training_eastMA_noMI[["lon", "lat"]].values.tolist()).astype(np.float32)
+base_model_names = ["pred_av", "pred_gs", "pred_caces"]
 
-# bma_ensemble_weights = bma_joint_samples['ensemble_weights']
-# ensemble_weights_val = tf.reduce_mean(bma_ensemble_weights, axis=0)
-
-# weights_dict = {
-#     "AV": ensemble_weights_val[:, 0],
-#     "GS": ensemble_weights_val[:,1],
-#     "CACES": ensemble_weights_val[:,2],
-# }
-# #weights_dict
-# color_norm_weights = make_color_norm(
-#     list(weights_dict.values()),#[2],   
-#     method="percentile")
+base_model_predictions_eastMA[["pred_av", "pred_gs", "pred_caces"]] = np.where(np.isnan(base_model_predictions_eastMA[["pred_av", "pred_gs", "pred_caces"]]), 0, base_model_predictions_eastMA[["pred_av", "pred_gs", "pred_caces"]])
+color_norm_base = make_color_norm(
+    base_model_predictions_eastMA[["pred_av", "pred_gs", "pred_caces"]],   
+    method="percentile")
 
 
 
-# ensemble_weights_var = np.var(bma_ensemble_weights, axis=0)
-# weights_var_dict = {
-#     "AV": ensemble_weights_var[:, 0],
-#     "GS": ensemble_weights_var[:,1],
-#     "CACES": ensemble_weights_var[:,2],
-# }
-# #weights_dict
-# color_norm_weights_var = make_color_norm(
-#     list(weights_var_dict.values()),#[0],   
-#     method="percentile")
+### 2. The predictive surface of individual BNE gp weights
 
 
-# base_model_names = ["AV", "GS", "CACES"]
-# for base_model_name in base_model_names:
-#     save_name = os.path.join(_SAVE_ADDR_PREFIX,
-#                              'base_weights_{}_bmals_{}_r_{}.png'.format(
-#                                  base_model_name, bma_gp_lengthscale,  bma_gp_l2_regularizer))
+bma_ensemble_weights = bma_joint_samples['ensemble_weights']
+ensemble_weights_val = tf.reduce_mean(bma_ensemble_weights, axis=0)
+
+weights_dict = {
+    "AV": ensemble_weights_val[:, 0],
+    "GS": ensemble_weights_val[:,1],
+    "CACES": ensemble_weights_val[:,2],
+}
+#weights_dict
+color_norm_weights = make_color_norm(
+    list(weights_dict.values()),#[2],   
+    method="percentile")
+
+
+
+ensemble_weights_var = np.var(bma_ensemble_weights, axis=0)
+weights_var_dict = {
+    "AV": ensemble_weights_var[:, 0],
+    "GS": ensemble_weights_var[:,1],
+    "CACES": ensemble_weights_var[:,2],
+}
+#weights_dict
+color_norm_weights_var = make_color_norm(
+    list(weights_var_dict.values()),#[0],   
+    method="percentile")
+
+
+base_model_names = ["AV", "GS", "CACES"]
+for base_model_name in base_model_names:
+    save_name = os.path.join(_SAVE_ADDR_PREFIX,
+                             'base_weights_{}_bmals_{}_r_{}.png'.format(
+                                 base_model_name, bma_gp_lengthscale,  bma_gp_l2_regularizer))
     
-#     posterior_heatmap_2d(weights_dict[base_model_name], coordinate,
-#                          monitors,
-#                          cmap='viridis',
-#                          norm=color_norm_weights, 
-#                          #norm_method="percentile",
-#                          #save_addr='')
-#                          save_addr=save_name)
+    posterior_heatmap_2d(weights_dict[base_model_name], coordinate,
+                         monitors,
+                         cmap='viridis',
+                         norm=color_norm_weights, 
+                         #norm_method="percentile",
+                         #save_addr='')
+                         save_addr=save_name)
 
 
-# # plot weights' variance
-# for base_model_name in base_model_names:
-#     save_name = os.path.join(_SAVE_ADDR_PREFIX,
-#                              'base_wvar_{}_bmals_{}_r_{}.png'.format(
-#                                  base_model_name, bma_gp_lengthscale,  bma_gp_l2_regularizer))
+# plot weights' variance
+for base_model_name in base_model_names:
+    save_name = os.path.join(_SAVE_ADDR_PREFIX,
+                             'base_wvar_{}_bmals_{}_r_{}.png'.format(
+                                 base_model_name, bma_gp_lengthscale,  bma_gp_l2_regularizer))
     
-#     posterior_heatmap_2d(weights_var_dict[base_model_name], coordinate,
-#                          monitors,
-#                          cmap='viridis',
-#                          norm=color_norm_weights_var, 
-#                          #norm_method="percentile",
-#                          #save_addr='')
-#                          save_addr=save_name)
+    posterior_heatmap_2d(weights_var_dict[base_model_name], coordinate,
+                         monitors,
+                         cmap='viridis',
+                         norm=color_norm_weights_var, 
+                         #norm_method="percentile",
+                         #save_addr='')
+                         save_addr=save_name)
 
 
 # ### 3. The predictive surface of Y_mean, residual process, and Y_mean + residual process.
 
     
 
-# # BNE vo
-# color_norm_pred = make_color_norm(
-#     #np.nan_to_num(list(surface_pred_bae.values())[:2][0]),
-#     list(surface_pred_bne_vo.values())[:2],  
-#     method="percentile")
+# BNE vo
+color_norm_pred = make_color_norm(
+    #np.nan_to_num(list(surface_pred_bae.values())[:2][0]),
+    list(surface_pred_bne_vo.values())[:2],  
+    method="percentile")
 
-# color_norm_pred_r = make_color_norm(
-#     #np.nan_to_num(list(surface_pred_bae.values())[2:]),
-#     list(surface_pred_bne_vo.values())[2],  
-#     method="residual_percentile")
+color_norm_pred_r = make_color_norm(
+    #np.nan_to_num(list(surface_pred_bae.values())[2:]),
+    list(surface_pred_bne_vo.values())[2],  
+    method="residual_percentile")
 
 
-# for name, value in surface_pred_bne_vo.items():
-#     save_name = os.path.join(_SAVE_ADDR_PREFIX,
-#                             'BNEvo_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(
-#                                 name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
-#                                 bne_gp_lengthscale, bne_gp_l2_regularizer))
+for name, value in surface_pred_bne_vo.items():
+    save_name = os.path.join(_SAVE_ADDR_PREFIX,
+                            'BNEvo_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(
+                                name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
+                                bne_gp_lengthscale, bne_gp_l2_regularizer))
 
-#     value = np.where(np.isnan(value), 0, value)
-#     color_norm = posterior_heatmap_2d(value, X=coordinate, X_monitor=monitors,
-#                                                   cmap='RdYlGn_r',
-#                     norm= color_norm_pred_r if name=='resid' else color_norm_pred,
-#                                       save_addr=save_name)
+    value = np.where(np.isnan(value), 0, value)
+    color_norm = posterior_heatmap_2d(value, X=coordinate, X_monitor=monitors,
+                                                  cmap='RdYlGn_r',
+                    norm= color_norm_pred_r if name=='resid' else color_norm_pred,
+                                      save_addr=save_name)
+                 
+
+# BNE v+s
+color_norm_pred = make_color_norm(
+    #np.nan_to_num(list(surface_pred_bae.values())[:2][0]),
+    list(surface_pred_bne_vs.values())[:2],  
+    method="percentile")
+
+color_norm_pred_r = make_color_norm(
+    #np.nan_to_num(list(surface_pred_bae.values())[2:]),
+    list(surface_pred_bne_vs.values())[2],  
+    method="residual_percentile")
+
+
+for name, value in surface_pred_bne_vs.items():
+    save_name = os.path.join(_SAVE_ADDR_PREFIX,
+                            'BNEvs_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(name, bma_gp_lengthscale, 
+                                bma_gp_l2_regularizer, bne_gp_lengthscale, bne_gp_l2_regularizer))
+
+    value = np.where(np.isnan(value), 0, value)
+    color_norm = posterior_heatmap_2d(value, X=coordinate, X_monitor=monitors,
+                                                  cmap='RdYlGn_r',
+                    norm= color_norm_pred_r if name=='resid' else color_norm_pred,
                     #norm_method="percentile",
                     #save_addr='')
-    
-
-
-# In[ ]:
-
-
-# # BNE v+s
-# color_norm_pred = make_color_norm(
-#     #np.nan_to_num(list(surface_pred_bae.values())[:2][0]),
-#     list(surface_pred_bne_vs.values())[:2],  
-#     method="percentile")
-
-# color_norm_pred_r = make_color_norm(
-#     #np.nan_to_num(list(surface_pred_bae.values())[2:]),
-#     list(surface_pred_bne_vs.values())[2],  
-#     method="residual_percentile")
-
-
-# for name, value in surface_pred_bne_vs.items():
-#     save_name = os.path.join(_SAVE_ADDR_PREFIX,
-#                             'BNEvs_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(name, bma_gp_lengthscale, 
-#                                 bma_gp_l2_regularizer, bne_gp_lengthscale, bne_gp_l2_regularizer))
-
-#     value = np.where(np.isnan(value), 0, value)
-#     color_norm = posterior_heatmap_2d(value, X=coordinate, X_monitor=monitors,
-#                                                   cmap='RdYlGn_r',
-#                     norm= color_norm_pred_r if name=='resid' else color_norm_pred,
-#                     #norm_method="percentile",
-#                     #save_addr='')
-#                 save_addr=save_name)
+                save_addr=save_name)
     
 
 
 # ### 4.The predictive variance of Y_mean, residual process, and Y.
 
-# In[ ]:
+# BAE
+color_norm_var = make_color_norm(
+    list(surface_var_bae.values())[:2], 
+    method="percentile")
+
+color_norm_var_r = make_color_norm(
+    list(surface_var_bae.values())[2], 
+    method="percentile")
 
 
-# # BAE
-# color_norm_var = make_color_norm(
-#     list(surface_var_bae.values())[:2], 
-#     method="percentile")
-
-# color_norm_var_r = make_color_norm(
-#     list(surface_var_bae.values())[2], 
-#     method="percentile")
-
-
-# for name, value in surface_var_bae.items():
-#     save_name = os.path.join(_SAVE_ADDR_PREFIX,
-#                             'var_BAE_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(
-#                                 name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
-#                                 bne_gp_lengthscale, bne_gp_l2_regularizer))
-#     #value = np.where(np.isnan(value), 0, value)
-#     color_norm = posterior_heatmap_2d(value, X=coordinate, X_monitor=monitors,
-#                                 cmap='inferno_r',
-#                                 norm= color_norm_var_r if name=='resid' else color_norm_var,
-#                                 #norm_method="percentile",
-#                                 save_addr=save_name)
+for name, value in surface_var_bae.items():
+    save_name = os.path.join(_SAVE_ADDR_PREFIX,
+                            'var_BAE_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(
+                                name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
+                                bne_gp_lengthscale, bne_gp_l2_regularizer))
+    #value = np.where(np.isnan(value), 0, value)
+    color_norm = posterior_heatmap_2d(value, X=coordinate, X_monitor=monitors,
+                                cmap='inferno_r',
+                                norm= color_norm_var_r if name=='resid' else color_norm_var,
+                                #norm_method="percentile",
+                                save_addr=save_name)
 
 
-# In[ ]:
 
 
-# # BNE vo
-# color_norm_var = make_color_norm(
-#     list(surface_var_bne_vo.values())[:2], 
-#     method="percentile")
+# BNE vo
+color_norm_var = make_color_norm(
+    list(surface_var_bne_vo.values())[:2], 
+    method="percentile")
 
-# color_norm_var_r = make_color_norm(
-#     list(surface_var_bne_vo.values())[2], 
-#     method="percentile")
-
-
-# for name, value in surface_var_bne_vo.items():
-#     save_name = os.path.join(_SAVE_ADDR_PREFIX,
-#                             'var_BNEvo_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(
-#                                 name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
-#                                 bne_gp_lengthscale, bne_gp_l2_regularizer))
-#     #value = np.where(np.isnan(value), 0, value)
-#     color_norm = posterior_heatmap_2d(value, X=coordinate, X_monitor=monitors,
-#                                 cmap='inferno_r',
-#                                 norm= color_norm_var_r if name=='resid' else color_norm_var,
-#                                 #norm_method="percentile",
-#                                 save_addr=save_name)
+color_norm_var_r = make_color_norm(
+    list(surface_var_bne_vo.values())[2], 
+    method="percentile")
 
 
-# In[ ]:
+for name, value in surface_var_bne_vo.items():
+    save_name = os.path.join(_SAVE_ADDR_PREFIX,
+                            'var_BNEvo_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(
+                                name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
+                                bne_gp_lengthscale, bne_gp_l2_regularizer))
+    #value = np.where(np.isnan(value), 0, value)
+    color_norm = posterior_heatmap_2d(value, X=coordinate, X_monitor=monitors,
+                                cmap='inferno_r',
+                                norm= color_norm_var_r if name=='resid' else color_norm_var,
+                                #norm_method="percentile",
+                                save_addr=save_name)
 
 
-# # BNE v+s
-# color_norm_var = make_color_norm(
-#     list(surface_var_bne_vs.values())[:2], 
-#     method="percentile")
 
-# color_norm_var_r = make_color_norm(
-#     list(surface_var_bne_vs.values())[2], 
-#     method="percentile")
+# BNE v+s
+color_norm_var = make_color_norm(
+    list(surface_var_bne_vs.values())[:2], 
+    method="percentile")
 
-
-# for name, value in surface_var_bne_vs.items():
-#     save_name = os.path.join(_SAVE_ADDR_PREFIX,
-#                             'var_BNEvs_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(
-#                                 name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
-#                                 bne_gp_lengthscale, bne_gp_l2_regularizer))
-#     #value = np.where(np.isnan(value), 0, value)
-#     color_norm = posterior_heatmap_2d(value, X=coordinate, X_monitor=monitors,
-#                                 cmap='inferno_r',
-#                                 norm= color_norm_var_r if name=='resid' else color_norm_var,
-#                                 #norm_method="percentile",
-#                                 save_addr=save_name)
+color_norm_var_r = make_color_norm(
+    list(surface_var_bne_vs.values())[2], 
+    method="percentile")
 
 
-# with open('rmse_cos222.txt', 'a') as f:
+for name, value in surface_var_bne_vs.items():
+    save_name = os.path.join(_SAVE_ADDR_PREFIX,
+                            'var_BNEvs_{}_bma:ls_{}_r_{}_bne:ls_{}_r_{}.png'.format(
+                                name, bma_gp_lengthscale,  bma_gp_l2_regularizer,
+                                bne_gp_lengthscale, bne_gp_l2_regularizer))
+    #value = np.where(np.isnan(value), 0, value)
+    color_norm = posterior_heatmap_2d(value, X=coordinate, X_monitor=monitors,
+                                cmap='inferno_r',
+                                norm= color_norm_var_r if name=='resid' else color_norm_var,
+                                #norm_method="percentile",
+                                save_addr=save_name)
+
+
+# with open('rmse_cos1115.txt', 'a') as f:
 #     f.write('\n')
 #     f.write(''.join(str(bma_gp_lengthscale)+ " "+str(bma_gp_l2_regularizer) + " "+ str(np.mean(rmse_bma))+ " "+str(np.std(rmse_bma))))
 
-print("rmse_lr:", rmse_lr, "rmse_gam:", rmse_gam, "rmse_bma:", rmse_bma)
-print("rmse_lr_mean:", np.mean(rmse_lr),"\n", "rmse_lr_std",  np.std(rmse_lr),"\n", "rmse_gam_mean:", np.mean(rmse_gam), "\n", "rmse_gam_std:", np.std(rmse_gam), "\n", "rmse_bma_mean:", np.mean(rmse_bma), "\n", "rmse_bma_std:", np.std(rmse_bma))
-print("coverage gam:", coverage_gam, "coverage lr:", coverage_lr)
+# #print("rmse_lr:", rmse_lr, "rmse_gam:", rmse_gam, "rmse_bma:", rmse_bma)
+# #print("rmse_lr_mean:", np.mean(rmse_lr),"\n", "rmse_lr_std",  np.std(rmse_lr),"\n", "rmse_gam_mean:", np.mean(rmse_gam), "\n", "rmse_gam_std:", np.std(rmse_gam), "\n", "rmse_bma_mean:", np.mean(rmse_bma), "\n", "rmse_bma_std:", np.std(rmse_bma))
+# #print("coverage gam:", coverage_gam, "coverage lr:", coverage_lr)
+# print(rmse_bma)
+# print(np.mean(rmse_bma))
+
