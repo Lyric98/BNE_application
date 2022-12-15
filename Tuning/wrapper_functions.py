@@ -247,28 +247,23 @@ goldstein = lambda x, y: (
     1. + (x + y + 1.)**2 * (19. - 14.*x + 3.*x**2 - 14.*y + 6*x*y + 3. * y**2)
     ) * (30. + (2.*x - 3.*y)**2 * (18. - 32.*x + 12.*x**2 + 48.*y - 36.*x*y + 27.*y**2))
 
-
-
-
-
 # @title Wrapper: run_posterior_inference
-def run_posterior_inference(model_dist: tfd.Distribution, 
-                            Y: tf.Tensor, 
-                            mcmc_config: Dict[str, Any], 
-                            map_config: Optional[Dict[str, Any]] = None, 
+def run_posterior_inference(model_dist: tfd.Distribution,
+                            Y: tf.Tensor,
+                            mcmc_config: Dict[str, Any],
+                            map_config: Optional[Dict[str, Any]] = None,
                             model_config: Optional[Dict[str, Any]] = None,
                             initialize_from_map: bool = True):
   """Wrapper function for running MCMC with MAP initialization."""
-  # Defines posterior log likelihood function, and also a 
+  # Defines posterior log likelihood function, and also a
   # randomly-sampled initial state from model prior.
   nchain = mcmc_config['nchain']
-  #print(mcmc_config["debug_mode"])
-  init_state, target_log_prob_fn = prepare_mcmc(model_dist, Y, nchain=nchain)  
-  
+  init_state, target_log_prob_fn = prepare_mcmc(model_dist, Y, nchain=nchain)
+
   if initialize_from_map:
     # Initializes at MAP, shape (num_chains, param_shape_0, param_shape_1).
     print('Running MAP:', end='\t')
-    init_state = run_map(target_log_prob_fn=target_log_prob_fn, 
+    init_state = run_map(target_log_prob_fn=target_log_prob_fn,
                          gp_config=model_config,
                          **map_config)
 
@@ -276,15 +271,49 @@ def run_posterior_inference(model_dist: tfd.Distribution,
 
   # Run MCMC, shape (param_shape_0, param_shape_1, num_chains).
   print('Running MCMC:', end='\t')
-  if mcmc_config["debug_mode"]:
-    gp_w_samples, chain_samples, sampler_stat = run_mcmc(init_state=init_state,
-                             target_log_prob_fn=target_log_prob_fn,
-                             **mcmc_config)
-    return gp_w_samples, chain_samples, sampler_stat
   gp_w_samples, _ = run_mcmc(init_state=init_state,
                              target_log_prob_fn=target_log_prob_fn,
-                             **mcmc_config)  
+                             **mcmc_config)
+
   return gp_w_samples
+
+
+
+
+# # @title Wrapper: run_posterior_inference
+# def run_posterior_inference(model_dist: tfd.Distribution, 
+#                             Y: tf.Tensor, 
+#                             mcmc_config: Dict[str, Any], 
+#                             map_config: Optional[Dict[str, Any]] = None, 
+#                             model_config: Optional[Dict[str, Any]] = None,
+#                             initialize_from_map: bool = True):
+#   """Wrapper function for running MCMC with MAP initialization."""
+#   # Defines posterior log likelihood function, and also a 
+#   # randomly-sampled initial state from model prior.
+#   nchain = mcmc_config['nchain']
+#   #print(mcmc_config["debug_mode"])
+#   init_state, target_log_prob_fn = prepare_mcmc(model_dist, Y, nchain=nchain)  
+  
+#   if initialize_from_map:
+#     # Initializes at MAP, shape (num_chains, param_shape_0, param_shape_1).
+#     print('Running MAP:', end='\t')
+#     init_state = run_map(target_log_prob_fn=target_log_prob_fn, 
+#                          gp_config=model_config,
+#                          **map_config)
+
+#     init_state = tf.stack([init_state] * mcmc_nchain, axis=0)
+
+#   # Run MCMC, shape (param_shape_0, param_shape_1, num_chains).
+#   print('Running MCMC:', end='\t')
+#   # if mcmc_config["debug_mode"]:
+#   #   gp_w_samples, chain_samples, sampler_stat = run_mcmc(init_state=init_state,
+#   #                            target_log_prob_fn=target_log_prob_fn,
+#   #                            **mcmc_config)
+#   #   return gp_w_samples, chain_samples, sampler_stat
+#   gp_w_samples, _ = run_mcmc(init_state=init_state,
+#                              target_log_prob_fn=target_log_prob_fn,
+#                              **mcmc_config)  
+#   return gp_w_samples
 
 # @title Wrapper: run_base_models
 def run_base_models(X_base, X_train, X_test, 
@@ -1818,8 +1847,11 @@ def get_bma_result(data_dict, bma_config):
   data_dict['means_train_mcmc'] = means_train_mcmc
   data_dict['means_test_mcmc'] = means_test_mcmc
   data_dict['bma_mean_samples'] = bma_joint_samples['y']
+  # data_dict['bma_mean_samples_original'] = bma_joint_samples['mean_original']
+  # data_dict['bma_mean_samples_resid'] = bma_joint_samples['resid']
+  # data_dict['bma_weight_samples'] = bma_joint_samples['weights']
 
-  return data_dict
+  return data_dict, bma_joint_samples
 
 # @title Simulation: get_bne_result
 def get_bne_result(data_dict, moment_mode, bne_config):
@@ -1836,8 +1868,9 @@ def get_bne_result(data_dict, moment_mode, bne_config):
                                 moment_mode=moment_mode,
                                 **bne_config)
   
-  data_dict[f'{model_name}_samples'] = joint_samples['y']
-  return data_dict
+  #data_dict[f'{model_name}_samples'] = joint_samples['y']
+  #return data_dict
+  return joint_samples
 
 
 # @title Visualization: posterior_heatmap_2d
