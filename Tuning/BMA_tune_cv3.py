@@ -138,179 +138,179 @@ base_preds_train = tf.stack([training_eastMA_noMI[base_model_name].astype(np.flo
 base_preds_test = tf.stack([base_model_predictions_eastMA[base_model_name].astype(np.float32) for base_model_name in base_model_names], axis=-1)
 #base_preds_test
 
-#coverage_lr = 0
-#coverage_gam = 0
-#coverage_bma = 0
+coverage_lr = 0
+coverage_gam = 0
+coverage_bma = 0
 
 
-#import rpy2
-#from rpy2.robjects import pandas2ri
-#from rpy2 import robjects as ro
-#from rpy2.robjects.packages import importr
-#import pandas as pd
-#import rpy2.robjects as ro
-#from rpy2.robjects import pandas2ri, r
-#from rpy2.robjects.conversion import localconverter
-# import R's "base" package
-#base = importr('base')
-#ms = importr('MSGARCH')
-# import R's "utils" package
-#utils = importr('utils')
-#utils.install_packages('ciTools', repos="https://cloud.r-project.org")
+import rpy2
+from rpy2.robjects import pandas2ri
+from rpy2 import robjects as ro
+from rpy2.robjects.packages import importr
+import pandas as pd
+import rpy2.robjects as ro
+from rpy2.robjects import pandas2ri, r
+from rpy2.robjects.conversion import localconverter
+#import R's "base" package
+base = importr('base')
+ms = importr('MSGARCH')
+#import R's "utils" package
+utils = importr('utils')
+utils.install_packages('ciTools', repos="https://cloud.r-project.org")
 
-#with localconverter(ro.default_converter + pandas2ri.converter):
-#  r_from_pd_df = ro.conversion.py2rpy(training_eastMA_noMI)
-
-
-#mgcv  = importr('mgcv')
-#stats = importr('stats')
-#ciTools = importr('ciTools')
+with localconverter(ro.default_converter + pandas2ri.converter):
+ r_from_pd_df = ro.conversion.py2rpy(training_eastMA_noMI)
 
 
-#ref_model = LinearRegression()
-#kf = KFold(n_splits=10, random_state=bma_seed, shuffle=True) 
-
-# concetenate the index
-#edge_list = [44]
-# exclude edge_list index from X_train1
-#train_wo_edge = training_eastMA_noMI[~np.isin(np.arange(len(X_train1)), edge_list)]
+mgcv  = importr('mgcv')
+stats = importr('stats')
+ciTools = importr('ciTools')
 
 
+ref_model = LinearRegression()
+kf = KFold(n_splits=10, random_state=bma_seed, shuffle=True) 
+
+#concetenate the index
+edge_list = [44]
+#exclude edge_list index from X_train1
+train_wo_edge = training_eastMA_noMI[~np.isin(np.arange(len(X_train1)), edge_list)]
 
 
 
-#rmse_lr = []
-#rmse_bma = []
-#rmse_gam = []
 
 
-#train_new_order = pd.concat([train_wo_edge, training_eastMA_noMI.iloc[edge_list]])
-# for train_index, test_index in kf.split(X_train1):
-#       #train_index = train_index.tolist() + edge_list
+rmse_lr = []
+rmse_bma = []
+rmse_gam = []
 
-#       X_tr, X_te = X_train1[train_index], X_train1[test_index] 
-#       Y_tr, Y_te = Y_train[train_index], Y_train[test_index]
+
+train_new_order = pd.concat([train_wo_edge, training_eastMA_noMI.iloc[edge_list]])
+for train_index, test_index in kf.split(X_train1):
+      #train_index = train_index.tolist() + edge_list
+
+      X_tr, X_te = X_train1[train_index], X_train1[test_index] 
+      Y_tr, Y_te = Y_train[train_index], Y_train[test_index]
       
-#       base_preds_tr, base_preds_te = base_preds_train.numpy()[train_index], base_preds_train.numpy()[test_index]
-#       print(X_tr.shape, X_te.shape, Y_tr.shape, Y_te.shape, base_preds_tr.shape, base_preds_te.shape)
+      base_preds_tr, base_preds_te = base_preds_train.numpy()[train_index], base_preds_train.numpy()[test_index]
+      print(X_tr.shape, X_te.shape, Y_tr.shape, Y_te.shape, base_preds_tr.shape, base_preds_te.shape)
     
-#       #r_dat_py = training_eastMA_noMI
-#       #r_dat_py[['lon', 'lat']] = X_train1
+      r_dat_py = training_eastMA_noMI
+      r_dat_py[['lon', 'lat']] = X_train1
       
-#       #with localconverter(ro.default_converter + pandas2ri.converter):
-#       #      r_tr = ro.conversion.py2rpy(r_dat_py.iloc[train_index])
-#       #      r_te = ro.conversion.py2rpy(r_dat_py.iloc[test_index])
+      with localconverter(ro.default_converter + pandas2ri.converter):
+           r_tr = ro.conversion.py2rpy(r_dat_py.iloc[train_index])
+           r_te = ro.conversion.py2rpy(r_dat_py.iloc[test_index])
 
-#       # Ref: lr
-#       #lr_model = stats.lm(ro.Formula('aqs~pred_av+pred_gs+pred_caces'), data=r_tr)
-#       #l = stats.predict(lr_model, newdata =r_te, interval = 'prediction')
-#       #py_l = np.asanyarray(l).reshape(-1, 3)
-#       #py_l = pd.DataFrame(py_l, columns=['pred', 'l', 'u'])
-#       #lr_ci_l, lr_ci_u = py_l['l'], py_l['u']
-#       #l = ciTools.add_pi(r_te, lr_model)
-#       #lr_pred = l[7]
-#       #lr_ci_l, lr_ci_u = l[8], l[9]
-#       #coverage_lr += np.sum([(Y_te[i] > lr_ci_l[i]) & (Y_te[i] < lr_ci_u[i]) for i in range(len(Y_te))])
-#       #rmse_lr.append(rmse(Y_te, np.asanyarray(lr_pred).reshape(-1,1)))
+      Ref: lr
+      lr_model = stats.lm(ro.Formula('aqs~pred_av+pred_gs+pred_caces'), data=r_tr)
+      l = stats.predict(lr_model, newdata =r_te, interval = 'prediction')
+      py_l = np.asanyarray(l).reshape(-1, 3)
+      py_l = pd.DataFrame(py_l, columns=['pred', 'l', 'u'])
+      lr_ci_l, lr_ci_u = py_l['l'], py_l['u']
+      l = ciTools.add_pi(r_te, lr_model)
+      lr_pred = l[7]
+      lr_ci_l, lr_ci_u = l[8], l[9]
+      coverage_lr += np.sum([(Y_te[i] > lr_ci_l[i]) & (Y_te[i] < lr_ci_u[i]) for i in range(len(Y_te))])
+      rmse_lr.append(rmse(Y_te, np.asanyarray(lr_pred).reshape(-1,1)))
 
-#       # Ref: GAM
-#       #df = training_eastMA_noMI.iloc[train_index]
-#       #gam_model = mgcv.gam(ro.Formula('aqs ~ s(lon, lat, by=pred_av, k=4) + s(lon, lat,by=pred_gs, k=4) +s(lon, lat, by=pred_caces, k=4)'), data=r_tr)
-#       #a= ciTools.add_pi(r_te, gam_model)
-#       #Y_pred = a[7]
-#       #gam_ci_l, gam_ci_u = a[8], a[9]
-#       #coverage_gam += np.sum([(Y_te[i] > gam_ci_l[i]) & (Y_te[i] < gam_ci_u[i]) for i in range(len(Y_te))])
-#       #rmse_gam.append(rmse(Y_te, np.asanyarray(Y_pred).reshape(-1,1)))
-#       #print(rmse_gam)
+      Ref: GAM
+      df = training_eastMA_noMI.iloc[train_index]
+      gam_model = mgcv.gam(ro.Formula('aqs ~ s(lon, lat, by=pred_av, k=4) + s(lon, lat,by=pred_gs, k=4) +s(lon, lat, by=pred_caces, k=4)'), data=r_tr)
+      a= ciTools.add_pi(r_te, gam_model)
+      Y_pred = a[7]
+      gam_ci_l, gam_ci_u = a[8], a[9]
+      coverage_gam += np.sum([(Y_te[i] > gam_ci_l[i]) & (Y_te[i] < gam_ci_u[i]) for i in range(len(Y_te))])
+      rmse_gam.append(rmse(Y_te, np.asanyarray(Y_pred).reshape(-1,1)))
+      print(rmse_gam)
 
-#       # build model & run MCMC
-#       bma_prior, bma_gp_config = bma_dist(X_tr, 
-#                                     base_preds_tr, 
-#                                     **bma_model_config)
+      # build model & run MCMC
+      bma_prior, bma_gp_config = bma_dist(X_tr, 
+                                    base_preds_tr, 
+                                    **bma_model_config)
 
-#       bma_model_config.update(bma_gp_config)
+      bma_model_config.update(bma_gp_config)
 
 
-#       bma_gp_w_samples = run_posterior_inference(model_dist=bma_prior, 
-#                                            model_config=bma_model_config,
-#                                            Y=Y_tr, 
-#                                            map_config=map_config,
-#                                            mcmc_config=mcmc_config)
+      bma_gp_w_samples = run_posterior_inference(model_dist=bma_prior, 
+                                           model_config=bma_model_config,
+                                           Y=Y_tr, 
+                                           map_config=map_config,
+                                           mcmc_config=mcmc_config)
 
-#       bma_joint_samples = make_bma_samples(X_te, None, base_preds_te, 
-#                                      bma_weight_samples=bma_gp_w_samples[0],
-#                                      bma_model_config=bma_model_config,
-#                                      n_samples=bma_n_samples_eval, 
-#                                      seed=bne_seed,
-#                                      y_samples_only=False)
+      bma_joint_samples = make_bma_samples(X_te, None, base_preds_te, 
+                                     bma_weight_samples=bma_gp_w_samples[0],
+                                     bma_model_config=bma_model_config,
+                                     n_samples=bma_n_samples_eval, 
+                                     seed=bne_seed,
+                                     y_samples_only=False)
     
 
-#       y_pred = bma_joint_samples['y']
-#       #print(bma_joint_samples)
-#       # compute predictive interval
+      y_pred = bma_joint_samples['y']
+      #print(bma_joint_samples)
+      # compute predictive interval
 
-#       y_pred = tf.reduce_mean(y_pred, axis=0)
+      y_pred = tf.reduce_mean(y_pred, axis=0)
 
-#       rmse_bma.append(rmse(Y_te, y_pred))
-      #print(rmse_bma)  
+      rmse_bma.append(rmse(Y_te, y_pred))
+      print(rmse_bma)  
 
-#       means_tr_mcmc, X_tr_mcmc, Y_tr_mcmc = make_bma_samples(
-#         X_tr, Y_tr, base_preds_tr, 
-#         bma_weight_samples=bma_gp_w_samples[0],
-#         bma_model_config=bma_model_config,
-#         n_samples=bma_n_samples_train,
-#         seed=bma_seed, 
-#         prepare_mcmc_training=True)
+      means_tr_mcmc, X_tr_mcmc, Y_tr_mcmc = make_bma_samples(
+        X_tr, Y_tr, base_preds_tr, 
+        bma_weight_samples=bma_gp_w_samples[0],
+        bma_model_config=bma_model_config,
+        n_samples=bma_n_samples_train,
+        seed=bma_seed, 
+        prepare_mcmc_training=True)
 
-#       means_te_mcmc = make_bma_samples(
-#         X_te, None, base_preds_te, 
-#         bma_weight_samples=bma_gp_w_samples[0],
-#         bma_model_config=bma_model_config,
-#         n_samples=bma_n_samples_test,
-#         seed=bma_seed)
+      means_te_mcmc = make_bma_samples(
+        X_te, None, base_preds_te, 
+        bma_weight_samples=bma_gp_w_samples[0],
+        bma_model_config=bma_model_config,
+        n_samples=bma_n_samples_test,
+        seed=bma_seed)
 
-#     # Construct posterior sampler.
-#       bne_prior, bne_gp_config = bne_model_dist(
-#           inputs=X_tr_mcmc,
-#           mean_preds=means_tr_mcmc,
-#           **bne_model_config)
+    # Construct posterior sampler.
+      bne_prior, bne_gp_config = bne_model_dist(
+          inputs=X_tr_mcmc,
+          mean_preds=means_tr_mcmc,
+          **bne_model_config)
 
-#       bne_model_config.update(bne_gp_config)
-#       print(f'prior model graph: {bne_prior.resolve_graph()}')
+      bne_model_config.update(bne_gp_config)
+      print(f'prior model graph: {bne_prior.resolve_graph()}')
 
-#       #Estimates GP weight posterior using MCMC.
-#       bne_gp_w_samples = run_posterior_inference(model_dist=bne_prior,
-#                                            model_config=bne_gp_config,
-#                                            Y=Y_tr_mcmc,
-#                                            map_config=map_config,
-#                                            mcmc_config=mcmc_config,
-#                                            initialize_from_map=True)
-# # Generates the posterior sample for all model parameters. 
-#       bne_joint_samples = make_bne_samples(X_te,
-#                                      mean_preds=means_te_mcmc,
-#                                      bne_model_config=bne_model_config,
-#                                      bne_weight_samples=bne_gp_w_samples[0],
-#                                      seed=bne_seed)
+      #Estimates GP weight posterior using MCMC.
+      bne_gp_w_samples = run_posterior_inference(model_dist=bne_prior,
+                                           model_config=bne_gp_config,
+                                           Y=Y_tr_mcmc,
+                                           map_config=map_config,
+                                           mcmc_config=mcmc_config,
+                                           initialize_from_map=True)
+# Generates the posterior sample for all model parameters. 
+      bne_joint_samples = make_bne_samples(X_te,
+                                     mean_preds=means_te_mcmc,
+                                     bne_model_config=bne_model_config,
+                                     bne_weight_samples=bne_gp_w_samples[0],
+                                     seed=bne_seed)
 
 
-#     #   bma_joint_samples = make_bma_samples(X_te, None, base_preds_te, 
-#     #                                  bma_weight_samples=bma_gp_w_samples[0],
-#     #                                  bma_model_config=bma_model_config,
-#     #                                  n_samples=bma_n_samples_eval, 
-#     #                                  seed=bne_seed,
-#     #                                  y_samples_only=False)
-#       y_pred = bne_joint_samples['y']
-#       print(y_pred.shape)
-#       y_pred = tf.reduce_mean(y_pred, axis=0)
-#       print(y_pred, Y_te)
-#       print(rmse(Y_te, y_pred))
+    #   bma_joint_samples = make_bma_samples(X_te, None, base_preds_te, 
+    #                                  bma_weight_samples=bma_gp_w_samples[0],
+    #                                  bma_model_config=bma_model_config,
+    #                                  n_samples=bma_n_samples_eval, 
+    #                                  seed=bne_seed,
+    #                                  y_samples_only=False)
+      y_pred = bne_joint_samples['y']
+      print(y_pred.shape)
+      y_pred = tf.reduce_mean(y_pred, axis=0)
+      print(y_pred, Y_te)
+      print(rmse(Y_te, y_pred))
 
-#       rmse_bma.append(rmse(Y_te, y_pred))
+      rmse_bma.append(rmse(Y_te, y_pred))
 
-# print(rmse_lr, rmse_bma)
+print(rmse_lr, rmse_bma)
 
-# print("RMSE LR: ", np.mean(rmse_lr), np.std(rmse_lr))
-# print("RMSE BMA: ", np.mean(rmse_bma), np.std(rmse_bma))
+print("RMSE LR: ", np.mean(rmse_lr), np.std(rmse_lr))
+print("RMSE BMA: ", np.mean(rmse_bma), np.std(rmse_bma))
 
 
 bma_prior, bma_gp_config = bma_dist(X_train1, 
@@ -591,13 +591,13 @@ for name, value in surface_var_bne_vs.items():
                                 save_addr=save_name)
 
 
-# with open('rmse_cos1115.txt', 'a') as f:
-#     f.write('\n')
-#     f.write(''.join(str(bma_gp_lengthscale)+ " "+str(bma_gp_l2_regularizer) + " "+ str(np.mean(rmse_bma))+ " "+str(np.std(rmse_bma))))
+with open('rmse_cos1115.txt', 'a') as f:
+    f.write('\n')
+    f.write(''.join(str(bma_gp_lengthscale)+ " "+str(bma_gp_l2_regularizer) + " "+ str(np.mean(rmse_bma))+ " "+str(np.std(rmse_bma))))
 
-# #print("rmse_lr:", rmse_lr, "rmse_gam:", rmse_gam, "rmse_bma:", rmse_bma)
-# #print("rmse_lr_mean:", np.mean(rmse_lr),"\n", "rmse_lr_std",  np.std(rmse_lr),"\n", "rmse_gam_mean:", np.mean(rmse_gam), "\n", "rmse_gam_std:", np.std(rmse_gam), "\n", "rmse_bma_mean:", np.mean(rmse_bma), "\n", "rmse_bma_std:", np.std(rmse_bma))
-# #print("coverage gam:", coverage_gam, "coverage lr:", coverage_lr)
-# print(rmse_bma)
-# print(np.mean(rmse_bma))
+#print("rmse_lr:", rmse_lr, "rmse_gam:", rmse_gam, "rmse_bma:", rmse_bma)
+#print("rmse_lr_mean:", np.mean(rmse_lr),"\n", "rmse_lr_std",  np.std(rmse_lr),"\n", "rmse_gam_mean:", np.mean(rmse_gam), "\n", "rmse_gam_std:", np.std(rmse_gam), "\n", "rmse_bma_mean:", np.mean(rmse_bma), "\n", "rmse_bma_std:", np.std(rmse_bma))
+#print("coverage gam:", coverage_gam, "coverage lr:", coverage_lr)
+print(rmse_bma)
+print(np.mean(rmse_bma))
 

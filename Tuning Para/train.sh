@@ -8,5 +8,5 @@
 #SBATCH --mem=80000
 #SBATCH --output=%j.out
 
-python CVCV.py --ls 0.275  --l2 1.0 
+python BNE_1213.py --ls 0.275  --l2 1.0 
 
