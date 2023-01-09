@@ -1043,9 +1043,22 @@ def build_ensemble_weight_logits(gp_weights, gp_features):
   """Builds Gaussian process prediction from random-feature weights."""
   return tf.linalg.matmul(gp_features, gp_weights) 
 
-def build_ensemble_weights(logits):
-  """Builds ensemble weights from Gaussian process prediction."""
-  return tf.keras.activations.softmax(logits)
+def build_ensemble_weights(logits, activation='softmax'):
+ """Builds ensemble weights from Gaussian process prediction."""
+ if activation == 'none':
+   return logits
+ elif activation == 'swish':
+   return tf.keras.activations.swish(logits)
+ elif activation == 'relu':
+   return tf.keras.activations.relu(logits)
+ elif activation == 'exponential':
+   return tf.keras.activations.exponential(logits)
+ elif activation == 'sigmoid':
+   return tf.keras.activations.sigmoid(logits)
+ elif activation == 'softmax':
+   return tf.keras.activations.softmax(logits)
+ else:
+   raise ValueError(f'Activation function {activation} not supported.')
 
 def ensemble_prediction(weights, base_model_preds):
   """Builds final ensemble prediction from ensemble weights and base models."""
@@ -1975,3 +1988,27 @@ def make_color_norm(color_data, method="percentile"):
 
 def rmse(y_obs, y_pred):
     return np.sqrt(np.mean((y_obs - y_pred) ** 2))
+
+def calc_prediction_std(y_pred, y):
+  """
+  This function takes two arguments:
+  y_pred: a TensorFlow tensor containing the predicted values of the response variable
+  y: a TensorFlow tensor containing the observed values of the response variable
+  The function calculates the residuals, mean, variance, and standard deviation of the residuals using TensorFlow operations and returns the standard deviation as a TensorFlow tensor.
+  To use this function, you will need to pass in the appropriate tensors as arguments and execute the TensorFlow graph to calculate the standard deviation.
+  """
+  # Calculate the residuals
+  residuals = y - y_pred
+
+  # Calculate the mean of the residuals
+  mean = tf.reduce_mean(residuals)
+  # change tf.int32 to tf.float32
+  mean = tf.cast(mean, tf.float32)
+  df = tf.cast(tf.size(residuals) - 1, tf.float32)
+  # Calculate the variance of the residuals
+  variance = tf.reduce_sum(tf.square(residuals - mean)) / df
+  
+  # Calculate the standard deviation of the residuals
+  std = tf.sqrt(variance)
+
+  return std

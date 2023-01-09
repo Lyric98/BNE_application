@@ -168,7 +168,7 @@ ciTools = importr('ciTools')
 
 
 #ref_model = LinearRegression()
-kf = KFold(n_splits=51, random_state=bma_seed, shuffle=True) 
+kf = KFold(n_splits=10, random_state=bma_seed, shuffle=True) 
 
 rmse_lr = []
 rmse_bma = []

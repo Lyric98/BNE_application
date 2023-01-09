@@ -123,6 +123,7 @@ print('BMA config:', bma_config, 'BNE config:', bne_config, flush=True)
 
 # Start cross-validation
 kf = KFold(n_splits=10, random_state=bma_seed, shuffle=True) 
+rmse_bma_mean, rmse_bma, rmse_bae, rmse_bne_vo, rmse_bne_vs = [], [], [], [], []
 for train_index, test_index in kf.split(X_train1):
     X_tr, X_te = X_train1[train_index], X_train1[test_index] 
     Y_tr, Y_te = Y_train[train_index], Y_train[test_index]
@@ -170,23 +171,19 @@ for train_index, test_index in kf.split(X_train1):
     y_pred_bne_vs = np.mean(np.nan_to_num(bne_vs_joint_samples['y']), axis=0)
     print(y_pred_bne_vs)
 
-    # Calculate rmse for this fold.
-    metrics = dict()
-    metrics['bma_mean'] = np.sqrt(np.mean((y_pred_bma_mean - Y_te)**2))
-    metrics['bma'] = np.sqrt(np.mean((y_pred_bma - Y_te)**2))
-    metrics['bae'] = np.sqrt(np.mean((y_pred_bae - Y_te)**2))
-    metrics['bne_vo'] = np.sqrt(np.mean((y_pred_bne_vo - Y_te)**2))
-    metrics['bne_vs'] = np.sqrt(np.mean((y_pred_bne_vs - Y_te)**2))
-    print(metrics, flush=True)
+    # save the rmse for each fold
+    rmse_bma_mean.append(rmse(Y_te, y_pred_bma_mean))
+    rmse_bma.append(rmse(Y_te, y_pred_bma))
+    rmse_bae.append(rmse(Y_te, y_pred_bae))
+    rmse_bne_vo.append(rmse(Y_te, y_pred_bne_vo))
+    rmse_bne_vs.append(rmse(Y_te, y_pred_bne_vs))
 
-# print metrics
-print(metrics)
-# print metrics average among folds
-average_metrics = np.mean(list(metrics.values()))
+
+# save rmse average among folds
+average_metrics = np.mean([rmse_bma_mean, rmse_bma, rmse_bae, rmse_bne_vo, rmse_bne_vs], axis=1)
 print(average_metrics)
-
 
 with open('rmse_bne.txt', 'a') as f:
     f.write('\n')
     #f.write(''.join(str(bma_gp_lengthscale)+ " "+str(bma_gp_l2_regularizer) + " "+ str(np.mean(rmse_bma))+ " "+str(np.std(rmse_bma))))
-    f.write(''.join(str(bne_gp_lengthscale)+ " "+str(bne_gp_l2_regularizer) + " "+ str(average_metrics)))
+    f.write(''.join(str(bne_gp_lengthscale)+ " "+str(bne_gp_l2_regularizer) + " "+ str(np.mean(rmse_bma_mean))+ " "+ str(np.mean(rmse_bma))+ " "+ str(np.mean(rmse_bae))+ " "+ str(np.mean(rmse_bne_vo))+ " "+ str(np.mean(rmse_bne_vs))))

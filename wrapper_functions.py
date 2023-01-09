@@ -1920,3 +1920,25 @@ def make_color_norm(color_data, method="percentile"):
 
 def rmse(y_obs, y_pred):
     return np.sqrt(np.mean((y_obs - y_pred)**2))
+
+def calc_prediction_std(y_pred, y):
+  """
+  This function takes two arguments:
+  y_pred: a TensorFlow tensor containing the predicted values of the response variable
+  y: a TensorFlow tensor containing the observed values of the response variable
+  The function calculates the residuals, mean, variance, and standard deviation of the residuals using TensorFlow operations and returns the standard deviation as a TensorFlow tensor.
+  To use this function, you will need to pass in the appropriate tensors as arguments and execute the TensorFlow graph to calculate the standard deviation.
+  """
+  # Calculate the residuals
+  residuals = y - y_pred
+
+  # Calculate the mean of the residuals
+  mean = tf.reduce_mean(residuals)
+
+  # Calculate the variance of the residuals
+  variance = tf.reduce_sum(tf.square(residuals - mean)) / (tf.size(residuals) - 1)
+
+  # Calculate the standard deviation of the residuals
+  std = tf.sqrt(variance)
+
+  return std

@@ -201,7 +201,7 @@ for train_index, test_index in kf.split(X_train1):
            r_tr = ro.conversion.py2rpy(r_dat_py.iloc[train_index])
            r_te = ro.conversion.py2rpy(r_dat_py.iloc[test_index])
 
-      Ref: lr
+      #Ref: lr
       lr_model = stats.lm(ro.Formula('aqs~pred_av+pred_gs+pred_caces'), data=r_tr)
       l = stats.predict(lr_model, newdata =r_te, interval = 'prediction')
       py_l = np.asanyarray(l).reshape(-1, 3)
@@ -213,7 +213,7 @@ for train_index, test_index in kf.split(X_train1):
       coverage_lr += np.sum([(Y_te[i] > lr_ci_l[i]) & (Y_te[i] < lr_ci_u[i]) for i in range(len(Y_te))])
       rmse_lr.append(rmse(Y_te, np.asanyarray(lr_pred).reshape(-1,1)))
 
-      Ref: GAM
+      #Ref: GAM
       df = training_eastMA_noMI.iloc[train_index]
       gam_model = mgcv.gam(ro.Formula('aqs ~ s(lon, lat, by=pred_av, k=4) + s(lon, lat,by=pred_gs, k=4) +s(lon, lat, by=pred_caces, k=4)'), data=r_tr)
       a= ciTools.add_pi(r_te, gam_model)

@@ -8,4 +8,4 @@
 #SBATCH --mem=80000
 #SBATCH --output=%j.out
 
-python LR_GAM.py --ls 1.0 --l2 1.0 
+python BMA_tune_ref2model.py --ls 1.0 --l2 1.0 
