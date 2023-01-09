@@ -948,6 +948,7 @@ def bma_dist(inputs: tf.Tensor,
              return_joint_dist: bool = True,
              debug_mode: bool = False,
              activation: str = None,
+             activation_func: str = None,
              **gp_kwargs):
   """Specifies an adaptive Bayesian model averaging (BMA) model.
   
@@ -1011,21 +1012,21 @@ def bma_dist(inputs: tf.Tensor,
 
   # Specifies Bayesian model averaging model.
   joint_dist = dict()
-
+  print("activation function used", activation_func)
   joint_dist["gp_weights"] = gp_weight_dist
   if posterior_mode and sample_intermediate_variables:
     # Generates posterior of all intermediate variables.
     joint_dist["gps"] = lambda gp_weights: tfd.Deterministic(
         loc=build_ensemble_weight_logits(gp_weights, gp_features))
     joint_dist["ensemble_weights"] = lambda gps: tfd.Deterministic(
-        loc=build_ensemble_weights(gps))
+        loc=build_ensemble_weights(gps, activation=activation_func))
     joint_dist["y"] = lambda ensemble_weights: tfd.Normal(
         loc=ensemble_prediction(ensemble_weights, base_model_preds), 
         scale=y_noise_std)
   else:
     # Use collapsed joint distribution for easy MCMC sampling.
     joint_dist["y"] = lambda gp_weights: tfd.Normal(
-        loc=ensemble_mean(gp_weights, base_model_preds, gp_features), 
+        loc=ensemble_mean(gp_weights, base_model_preds, gp_features, activation_func), 
         scale=y_noise_std)
   
   if return_joint_dist:
@@ -1064,10 +1065,10 @@ def ensemble_prediction(weights, base_model_preds):
   """Builds final ensemble prediction from ensemble weights and base models."""
   return tf.reduce_sum(base_model_preds * weights, axis=-1, keepdims=True)
 
-def ensemble_mean(gp_weights, base_model_preds, gp_features):
+def ensemble_mean(gp_weights, base_model_preds, gp_features, activation_func):
   """Computes final ensemble prediction directly from random-feature weights"""
   logits = build_ensemble_weight_logits(gp_weights, gp_features)
-  ensemble_weights = build_ensemble_weights(logits)
+  ensemble_weights = build_ensemble_weights(logits, activation=activation_func)
   return ensemble_prediction(ensemble_weights, base_model_preds)
 
 # @title Model: Bayesian Nonparametric Ensemble

@@ -26,6 +26,12 @@ if __name__ == '__main__':
         type=float,
         default=1e-1,
     )
+    opts.add_argument(
+        "--activation",
+        help="the activation function to use",
+        type=str,
+        default="softmax",
+    )
     opts = opts.parse_args()
 
     test_parse(opts)
@@ -57,6 +63,7 @@ bne_mcmc_initialize_from_map = eval(bne_mcmc_initialize_from_map)
 y_noise_std = 0.01  # Note: Changed from 0.1 # @param
 bma_gp_lengthscale = opts.ls # @param
 bma_gp_l2_regularizer = opts.l2 # @param
+activation_func = opts.activation
 
 bma_n_samples_train = 100 # @param
 bma_n_samples_eval = 250 # @param
@@ -119,11 +126,12 @@ base_preds_test = tf.stack([base_model_predictions_eastMA[base_model_name].astyp
 bma_model_config = DEFAULT_GP_CONFIG.copy()
 map_config = DEFAULT_MAP_CONFIG.copy()
 mcmc_config = DEFAULT_MCMC_CONFIG.copy()
+activation_func = activation_func
 
 bma_model_config.update(dict(lengthscale=bma_gp_lengthscale,
                              l2_regularizer=bma_gp_l2_regularizer,
                              y_noise_std=y_noise_std,
-                             activation='relu'))
+                             activation=activation_func))
 
 map_config.update(dict(learning_rate=map_step_size,
                        num_steps=map_num_steps))
@@ -222,7 +230,7 @@ for train_index, test_index in kf.split(X_train1):
                                            map_config=map_config,
                                            mcmc_config=mcmc_config)
 
-
+    print(bma_model_config)
     bma_joint_samples = make_bma_samples(X_te, None, base_preds_te, 
                                      bma_weight_samples=bma_gp_w_samples[0],
                                      bma_model_config=bma_model_config,
