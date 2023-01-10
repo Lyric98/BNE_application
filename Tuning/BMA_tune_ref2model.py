@@ -4,7 +4,8 @@ def test_parse(opts):
     print("#########################")
     print("Testing here:")
     print("BMA GP lengthscale is: ", opts.ls, 
-          " and BMA GP L2 regularizer is: ", opts.l2)
+          " and BMA GP L2 regularizer is: ", opts.l2,
+          " and activation function is: ", opts.activation)
     print("Thanks for testing!")
     print("#########################")
 
@@ -126,12 +127,12 @@ base_preds_test = tf.stack([base_model_predictions_eastMA[base_model_name].astyp
 bma_model_config = DEFAULT_GP_CONFIG.copy()
 map_config = DEFAULT_MAP_CONFIG.copy()
 mcmc_config = DEFAULT_MCMC_CONFIG.copy()
-activation_func = activation_func
 
 bma_model_config.update(dict(lengthscale=bma_gp_lengthscale,
                              l2_regularizer=bma_gp_l2_regularizer,
                              y_noise_std=y_noise_std,
-                             activation=activation_func))
+                             activation='relu',
+                             activation_func=activation_func))
 
 map_config.update(dict(learning_rate=map_step_size,
                        num_steps=map_num_steps))
