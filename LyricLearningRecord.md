@@ -32,7 +32,20 @@ jupyter notebook 转换成 python script
 jupyter nbconvert --to script
 ```
 
-## Linux 文件相关
+## Linux 相关
+vim 光标移动到行首、行尾 (在enter 编辑 “i” 之前操作)
+```
+行首 0 (or ^)
+行尾 $ 
+```
+删除行
+```
+按Esc键进入正常模式。
+将光标放在要删除的行上。
+键入dd以删除该行。
+```
+
+
 Linux下删除指定文件夹下指定后缀名的文件: 命令有点危险，可以先执行前半段，看看是不是你要删除的文件, 然后再整条执行
 
 ```

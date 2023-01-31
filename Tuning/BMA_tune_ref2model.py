@@ -153,6 +153,8 @@ kf = KFold(n_splits=10, random_state=bma_seed, shuffle=True)
 rmse_lr = []
 rmse_gam = []
 rmse_bma = []
+pred_error = []
+nll_lr, nll_gam, nll_bma = [], [], []
 
 coverage_lr = 0
 coverage_gam = 0
@@ -206,6 +208,7 @@ for train_index, test_index in kf.split(X_train1):
     lr_ci_l, lr_ci_u = l[8], l[9]
     coverage_lr += np.sum([(Y_te[i] > lr_ci_l[i]) & (Y_te[i] < lr_ci_u[i]) for i in range(len(Y_te))])
     rmse_lr.append(rmse(Y_te, np.asanyarray(lr_pred).reshape(-1,1)))
+    nll_lr.append(nll(Y_te, np.asanyarray(lr_pred).reshape(-1,1)))
 
     # Ref: GAM
     #df = training_eastMA_noMI.iloc[train_index]
@@ -215,6 +218,7 @@ for train_index, test_index in kf.split(X_train1):
     gam_ci_l, gam_ci_u = a[8], a[9]
     coverage_gam += np.sum([(Y_te[i] > gam_ci_l[i]) & (Y_te[i] < gam_ci_u[i]) for i in range(len(Y_te))])
     rmse_gam.append(rmse(Y_te, np.asanyarray(gam_pred).reshape(-1,1)))
+    nll_gam.append(nll(Y_te, np.asanyarray(gam_pred).reshape(-1,1)))
     #print(rmse_gam)
 
     # build model & run MCMC
@@ -247,11 +251,16 @@ for train_index, test_index in kf.split(X_train1):
     coverage_bma += np.sum([(Y_te[i] > bma_pi[0][i]) & (Y_te[i] < bma_pi[1][i]) for i in range(len(Y_te))])
     print(coverage_bma)
     rmse_bma.append(rmse(Y_te, y_pred))
+    nll_bma.append(nll(Y_te, y_pred))
     
 
-print("RMSE LR: ", np.mean(rmse_lr), np.std(rmse_lr))
-print("RMSE GAM: ", np.mean(rmse_gam), np.std(rmse_gam))
-print("RMSE BMA: ", np.mean(rmse_bma), np.std(rmse_bma))
+print("RMSE LR: ", np.mean(rmse_lr), np.median(rmse_lr), np.std(rmse_lr))
+print("RMSE GAM: ", np.mean(rmse_gam), np.median(rmse_gam), np.std(rmse_gam))
+print("RMSE BMA: ", np.mean(rmse_bma), np.median(rmse_bma), np.std(rmse_bma))
+
+print("NLL LR: ", np.mean(nll_lr), np.median(nll_lr), np.std(nll_lr))
+print("NLL GAM: ", np.mean(nll_gam), np.median(nll_gam), np.std(nll_gam))
+print("NLL BMA: ", np.mean(nll_bma), np.median(nll_bma), np.std(nll_bma))
 
 print("Coverage LR: ", coverage_lr/len(Y_train))
 print("Coverage GAM: ", coverage_gam/len(Y_train))
@@ -263,4 +272,4 @@ print("Coverage BMA: ", coverage_bma/len(Y_train))
 
 with open('BMA_tune_ref2model.txt', 'a') as f:
     f.write('\n')
-    f.write(''.join(str(bma_gp_lengthscale)+ " "+str(bma_gp_l2_regularizer) + " "+ str(np.mean(rmse_bma))+ " "+str(np.std(rmse_bma))+ " "+str(coverage_bma/len(Y_train))+ " "+str(coverage_bma)))
+    f.write(''.join(str(bma_gp_lengthscale)+ " "+str(bma_gp_l2_regularizer) + " "+ str(np.mean(rmse_bma)) + " "+ str(np.median(rmse_bma))+ " "+str(np.std(rmse_bma))+ " "+str(coverage_bma/len(Y_train))+ " "+str(coverage_bma)+ " " + str(np.mean(nll_bma))+ " " + str(np.median(nll_bma) ) + " " + str(np.std(nll_bma) )))
