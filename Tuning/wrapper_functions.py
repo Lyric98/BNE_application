@@ -2059,3 +2059,14 @@ def nll(y_true, y_pred):
   nll = np.mean((y_true - y_pred)**2 / sigma_pred**2)
 
   return nll
+
+
+def nll_each(y_true, y_pred):
+  """
+  For the systematic error, we use this function to check the cross-validation NLL at each location (y_true-y_pred)^2/pred_var
+  """
+  sigma_pred = calc_prediction_std(y_pred, y_true)
+  nll = ((y_true - y_pred) / sigma_pred )**2
+  return nll
+
+
