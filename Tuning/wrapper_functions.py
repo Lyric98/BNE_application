@@ -1868,7 +1868,7 @@ def get_bma_result(data_dict, bma_config):
   # data_dict['bma_mean_samples_resid'] = bma_joint_samples['resid']
   # data_dict['bma_weight_samples'] = bma_joint_samples['weights']
 
-  return data_dict, bma_joint_samples
+  return data_dict#, bma_joint_samples (commentted on Mar 24
 
 # @title Simulation: get_bne_result
 def get_bne_result(data_dict, moment_mode, bne_config):
@@ -1885,9 +1885,10 @@ def get_bne_result(data_dict, moment_mode, bne_config):
                                 moment_mode=moment_mode,
                                 **bne_config)
   
-  #data_dict[f'{model_name}_samples'] = joint_samples['y']
-  #return data_dict
-  return joint_samples
+  data_dict[f'{model_name}_samples'] = joint_samples['y']
+  return data_dict
+  #return joint_samples (commentted on Mar 24
+
 
 
 # @title Visualization: posterior_heatmap_2d

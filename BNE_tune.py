@@ -739,7 +739,7 @@ color_norm_var = make_color_norm(
     list(surface_var_bne_vs.values())[:2], 
     method="percentile")
 
- color_norm_var_r = make_color_norm(
+color_norm_var_r = make_color_norm(
     list(surface_var_bne_vs.values())[2], 
     method="percentile")
 
