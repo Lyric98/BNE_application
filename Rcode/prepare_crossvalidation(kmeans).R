@@ -2,7 +2,6 @@ library(here)
 library(sf)
 library(magrittr)
 library(dplyr)
-library(fst)
 library(raster)
 library(tibble)
 library(tidyr)
@@ -27,14 +26,6 @@ aqs <- readr::read_csv('../data/ground_truth/curated/aqs_curated_2011.csv')
 training <- readr::read_csv('../data/training_dataset/training_eastMA.csv')
 training51 <- training[c(1:51),]
 
-# 2b. plot to confirm success
-training51 %>% 
-  sf::st_as_sf(coords = c("lon", "lat"), crs=st_crs("epsg:4269")) %>% 
-  plot()
-
-base_models %>% 
-  sf::st_as_sf(coords = c("lon", "lat"), crs=st_crs("epsg:4269")) %>% 
-  plot()
 
 # 3a. set threshold of cluster in meters
 clustThreshold <- 30 * 1000
@@ -49,9 +40,11 @@ training.loc <- training51 %>%
   as.matrix()
 
 # 3c. Compute k-means clustering
-set.seed(4)
-k <- 10
+set.seed(15)
+k <- 6
 kmeans_res <- kmeans(training.loc, k)
+kmeans_res$size
+
 
 # 3d. Assign monitors to folds based on k-means clusters
 training51$fold <- as.factor(kmeans_res$cluster)
@@ -61,6 +54,7 @@ training51.sf <- training51 %>%
   st_as_sf(coords = c("lon", "lat"), crs=st_crs("epsg:4326"))
 
 # Check folds
-training51 %>% 
-  ggplot() +
-  geom_sf(aes(color = fold))
+training51 %>%
+  sf::st_as_sf(coords = c("lon", "lat"), crs=st_crs("epsg:4269")) %>%
+  plot()
+
