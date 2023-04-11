@@ -78,7 +78,7 @@ bne_seed = 0 # @param
 
 # ### Read training/prediction data
 
-training_eastMA = pd.read_csv('../data/training_dataset/training51_new.csv')
+training_eastMA = pd.read_csv('../data/training_dataset/training51_kmeans6.csv')
 training_eastMA_noMI = training_eastMA[:51]
 base_model_predictions_eastMA = pd.read_csv('../data/prediction_dataset/base_model_predictions_eastMA.csv')
 
@@ -289,7 +289,7 @@ stats = importr('stats')
 ciTools = importr('ciTools')
 
 rmse_bma_mean, rmse_bma2, rmse_bae = [], [], []
-for fold_id in range(1,11):
+for fold_id in range(1,7):
     print(fold_id)
     X_tr, X_te = X_train1[spcv_id!=fold_id], X_train1[spcv_id==fold_id]
     Y_tr, Y_te = Y_train[spcv_id!=fold_id], Y_train[spcv_id==fold_id]
@@ -312,8 +312,8 @@ for fold_id in range(1,11):
     lr_model = stats.lm(ro.Formula(
         'aqs~pred_av+pred_gs+pred_caces'), data=r_tr)
     l = ciTools.add_pi(r_te, lr_model)
-    lr_pred = l[10]
-    lr_ci_l, lr_ci_u = l[11], l[12]
+    lr_pred = l[8]
+    lr_ci_l, lr_ci_u = l[9], l[10]
     coverage_lr += np.sum([(Y_te[i] > lr_ci_l[i]) &
                           (Y_te[i] < lr_ci_u[i]) for i in range(len(Y_te))])
     rmse_lr.append(rmse(Y_te, np.asanyarray(lr_pred).reshape(-1, 1)))
@@ -324,8 +324,8 @@ for fold_id in range(1,11):
     gam_model = mgcv.gam(ro.Formula(
         'aqs ~ s(lon, lat, by=pred_av, k=4) + s(lon, lat,by=pred_gs, k=4) +s(lon, lat, by=pred_caces, k=4)'), data=r_tr)
     a = ciTools.add_pi(r_te, gam_model)
-    gam_pred = a[10]
-    gam_ci_l, gam_ci_u = a[11], a[12]
+    gam_pred = a[8]
+    gam_ci_l, gam_ci_u = a[9], a[10]
     coverage_gam += np.sum([(Y_te[i] > gam_ci_l[i]) &
                            (Y_te[i] < gam_ci_u[i]) for i in range(len(Y_te))])
     rmse_gam.append(rmse(Y_te, np.asanyarray(gam_pred).reshape(-1, 1)))
@@ -403,7 +403,7 @@ for fold_id in range(1,11):
 
 print("RMSE LR: ", np.mean(rmse_lr), np.median(rmse_lr), np.std(rmse_lr))
 print("RMSE GAM: ", np.mean(rmse_gam), np.median(rmse_gam), np.std(rmse_gam))
-print("RMSE BMA: ", np.mean(rmse_bma), np.median(rmse_bma), np.std(rmse_bma))
+print("RMSE BMA: ", np.mean(rmse_bma2), np.median(rmse_bma2), np.std(rmse_bma2))
 
 print("NLL LR: ", np.mean(nll_lr), np.median(nll_lr), np.std(nll_lr))
 print("NLL GAM: ", np.mean(nll_gam), np.median(nll_gam), np.std(nll_gam))
@@ -413,14 +413,9 @@ print("Coverage LR: ", coverage_lr/len(Y_train))
 print("Coverage GAM: ", coverage_gam/len(Y_train))
 print("Coverage BMA: ", coverage_bma/len(Y_train))
 
-# lr_s = ['', str(np.mean(rmse_lr)), str(np.std(rmse_lr))]
-# bma_s = [ str(np.mean(rmse_bma)), str(np.std(rmse_bma))]
-
-
 with open('spcv0406.txt', 'a') as f:
     f.write('\n')
     f.write(''.join(str(bma_gp_lengthscale)+ " "+str(bma_gp_l2_regularizer) + " "+ 
                     str(np.mean(rmse_bma_mean)) + " "+ str(np.median(rmse_bma_mean))+ " "+str(np.std(rmse_bma_mean))+ " "+str(coverage_bma_mean/len(Y_train))+ " "+
-                    str(np.mean(rmse_bma2)) + " "+ str(np.median(rmse_bma2))+ " "+str(np.std(rmse_bma2))+ " "+str(coverage_bma/len(Y_train))+ " "+
-                    str(np.mean(rmse_bae)) + " "+ str(np.median(rmse_bae))+ " "+str(np.std(rmse_bae))+ " "+str(coverage_bae/len(Y_train))
-                    ))
+                    str(np.mean(nll_bma_mean)) + " "+ str(np.median(nll_bma_mean))+ " "+str(np.std(nll_bma_mean)))
+                    )
