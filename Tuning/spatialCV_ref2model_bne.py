@@ -54,7 +54,7 @@ bne_mcmc_initialize_from_map = eval(bne_mcmc_initialize_from_map)
 y_noise_std = 0.01  # Note: Changed from 0.1 # @param
 bma_gp_lengthscale = 0.7 # @param
 bma_gp_l2_regularizer = 0.05 # @param
-activation_func = opts.activation
+activation_func = "softmax"
 
 bma_n_samples_train = 100 # @param
 bma_n_samples_eval = 250 # @param
@@ -325,6 +325,8 @@ for fold_id in range(1,7):
     # BMA.
     bma_var_config = bne_config.copy()
     bma_var_config['mcmc_initialize_from_map'] = bma_config['mcmc_initialize_from_map']
+    print('BMA var config:', flush=True)
+    print(bma_var_config)
     bma_joint_samples = get_bne_result(data_dict, moment_mode='none',
                                        bne_config=bma_var_config)
     y_pred_bma = np.mean(np.nan_to_num(bma_joint_samples['y']), axis=0)
@@ -334,6 +336,8 @@ for fold_id in range(1,7):
                        (y_pred_bma + 1.96*pred_std).numpy()])
 
     # BAE.
+    print('BNE config:', flush=True)
+    print(bne_config)
     bae_joint_samples = get_bne_result(data_dict, moment_mode='mean',
                                        bne_config=bne_config)
     y_pred_bae = np.mean(np.nan_to_num(bae_joint_samples['y']), axis=0)
@@ -382,7 +386,6 @@ with open('spcv0412.txt', 'a') as f:
     f.write('\n')
     f.write(''.join(str(bne_gp_lengthscale)+ " "+str(bne_gp_l2_regularizer) + " "+ 
                     str(np.mean(rmse_bma2)) + " "+ str(np.median(rmse_bma2))+ " "+str(np.std(rmse_bma2))+ " "+str(coverage_bma/len(Y_train))+ " "+
-                    str(np.mean(nll_bma)) + " "+ str(np.median(nll_bma))+ " "+str(np.std(nll_bma))+ " "+ 
+                    str(np.mean(nll_bma)) + " "+ str(np.median(nll_bma))+ " "+ 
                     str(np.mean(rmse_bae)) + " "+ str(np.median(rmse_bae))+ " "+str(np.std(rmse_bae))+ " "+str(coverage_bae/len(Y_train))+ " "+
-                    str(np.mean(nll_bma)) + " "+ str(np.median(nll_bma))+ " "+str(np.std(nll_bma)))
-                    )
+                    str(np.mean(nll_bae)) + " "+ str(np.median(nll_bae))))
