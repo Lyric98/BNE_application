@@ -21,8 +21,8 @@ def launch_batch_cluster(bne_gp_lengthscale, bne_gp_l2_regularizer):
         with open(sbatch_name, "r") as f:
             content = f.read()
             content = re.sub(
-                "python spatialCV_ref2model.py --ls .* --l2 .* --activation .* ",
-                f"python spatialCV_ref2model.py --ls {bne_gp_lengthscale} --l2 {bne_gp_l2_regularizer} ",
+                "python spatialCV_ref2model_bne.py --ls .* --l2 .* ",
+                f"python spatialCV_ref2model_bne.py --ls {bne_gp_lengthscale} --l2 {bne_gp_l2_regularizer} ",
                 content,
             )
 
