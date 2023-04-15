@@ -52,8 +52,8 @@ bne_mcmc_initialize_from_map = eval(bne_mcmc_initialize_from_map)
 
 # BMA parameters.
 y_noise_std = 0.01  # Note: Changed from 0.1 # @param
-bma_gp_lengthscale = 0.7 # @param
-bma_gp_l2_regularizer = 0.05 # @param
+bma_gp_lengthscale = 2.675 # @param
+bma_gp_l2_regularizer = 0.2 # @param
 activation_func = "softmax"
 
 bma_n_samples_train = 100 # @param
@@ -152,6 +152,8 @@ def get_bne_result(data_dict, moment_mode, bne_config):
                                 moment_mode=moment_mode,
                                 **bne_config)
 
+  #data_dict[f'{model_name}_samples'] = joint_samples['y']
+  #return data_dict
   return joint_samples
 
 # @title Simulation: get_bma_result
@@ -224,13 +226,17 @@ rmse_lr = []
 rmse_gam = []
 rmse_bma = []
 rmse_bae = []
+rmse_bma2 = []
 rmse_bma_mean = []
 
 
 nll_lr, nll_gam, nll_bma_mean, nll_bma, nll_bae = [], [], [], [], []
+nll_bma2 = []
+# initialize a dataframe to store lon, lat and raw error
+error_df = pd.DataFrame(columns=['lon', 'lat', 'raw_error'])
 
 coverage_lr, coverage_gam, coverage_bma_mean, coverage_bma, coverage_bae = 0, 0, 0, 0, 0
-
+coverage_bma2 = 0
 #from rpy2.robjects import pandas2ri
 # import R's "base" package
 base = importr('base')
@@ -251,6 +257,7 @@ mgcv = importr('mgcv')
 stats = importr('stats')
 ciTools = importr('ciTools')
 
+rmse_bma_mean, rmse_bma2, rmse_bae = [], [], []
 for fold_id in range(1,7):
     print(fold_id)
     X_tr, X_te = X_train1[spcv_id!=fold_id], X_train1[spcv_id==fold_id]
@@ -264,38 +271,38 @@ for fold_id in range(1,7):
           base_preds_tr.shape, base_preds_te.shape)
 
 
-    r_dat_py = training_eastMA_noMI
+    # r_dat_py = training_eastMA_noMI
 
-    with localconverter(ro.default_converter + pandas2ri.converter):
-        r_tr = ro.conversion.py2rpy(r_dat_py[spcv_id!=fold_id])
-        r_te = ro.conversion.py2rpy(r_dat_py[spcv_id==fold_id])
+    # with localconverter(ro.default_converter + pandas2ri.converter):
+    #     r_tr = ro.conversion.py2rpy(r_dat_py[spcv_id!=fold_id])
+    #     r_te = ro.conversion.py2rpy(r_dat_py[spcv_id==fold_id])
 
-    # Ref: lr
-    lr_model = stats.lm(ro.Formula(
-        'aqs~pred_av+pred_gs+pred_caces'), data=r_tr)
-    l = ciTools.add_pi(r_te, lr_model)
-    lr_pred = l[8]
-    lr_ci_l, lr_ci_u = l[9], l[10]
-    coverage_lr += np.sum([(Y_te[i] > lr_ci_l[i]) &
-                          (Y_te[i] < lr_ci_u[i]) for i in range(len(Y_te))])
-    rmse_lr.append(rmse(Y_te, np.asanyarray(lr_pred).reshape(-1, 1)))
-    nll_lr.append(nll(Y_te, np.asanyarray(lr_pred).reshape(-1, 1)))
-    print(rmse_lr)
+    # # Ref: lr
+    # lr_model = stats.lm(ro.Formula(
+    #     'aqs~pred_av+pred_gs+pred_caces'), data=r_tr)
+    # l = ciTools.add_pi(r_te, lr_model)
+    # lr_pred = l[8]
+    # lr_ci_l, lr_ci_u = l[9], l[10]
+    # coverage_lr += np.sum([(Y_te[i] > lr_ci_l[i]) &
+    #                       (Y_te[i] < lr_ci_u[i]) for i in range(len(Y_te))])
+    # rmse_lr.append(rmse(Y_te, np.asanyarray(lr_pred).reshape(-1, 1)))
+    # nll_lr.append(nll(Y_te, np.asanyarray(lr_pred).reshape(-1, 1)))
+    # print(rmse_lr)
 
-    # Ref: GAM
-    gam_model = mgcv.gam(ro.Formula(
-        'aqs ~ s(lon, lat, by=pred_av, k=4) + s(lon, lat,by=pred_gs, k=4) +s(lon, lat, by=pred_caces, k=4)'), data=r_tr)
-    a = ciTools.add_pi(r_te, gam_model)
-    gam_pred = a[8]
-    gam_ci_l, gam_ci_u = a[9], a[10]
-    coverage_gam += np.sum([(Y_te[i] > gam_ci_l[i]) &
-                           (Y_te[i] < gam_ci_u[i]) for i in range(len(Y_te))])
-    rmse_gam.append(rmse(Y_te, np.asanyarray(gam_pred).reshape(-1, 1)))
-    nll_gam.append(nll(Y_te, np.asanyarray(gam_pred).reshape(-1, 1)))
-    print(rmse_gam)
+    # # Ref: GAM
+    # gam_model = mgcv.gam(ro.Formula(
+    #     'aqs ~ s(lon, lat, by=pred_av, k=4) + s(lon, lat,by=pred_gs, k=4) +s(lon, lat, by=pred_caces, k=4)'), data=r_tr)
+    # a = ciTools.add_pi(r_te, gam_model)
+    # gam_pred = a[8]
+    # gam_ci_l, gam_ci_u = a[9], a[10]
+    # coverage_gam += np.sum([(Y_te[i] > gam_ci_l[i]) &
+    #                        (Y_te[i] < gam_ci_u[i]) for i in range(len(Y_te))])
+    # rmse_gam.append(rmse(Y_te, np.asanyarray(gam_pred).reshape(-1, 1)))
+    # nll_gam.append(nll(Y_te, np.asanyarray(gam_pred).reshape(-1, 1)))
+    # print(rmse_gam)
 
-    print("LR prediction", lr_pred)
-    print("GAM prediction", gam_pred)
+    # print("LR prediction", lr_pred)
+    # print("GAM prediction", gam_pred)
 
     data_dicts = dict(X_train=X_tr,
                       X_test=X_te,
@@ -304,26 +311,29 @@ for fold_id in range(1,7):
                       base_preds_test=base_preds_te)
 
     print(Y_te)
-    # BMA-mean.
-    print('BMA-mean:', flush=True)
-    data_dict, bma_mean_joint_samples = get_bma_result(
-        data_dicts, bma_config=bma_config)
-    y_pred_bma_mean = np.mean(np.nan_to_num(bma_mean_joint_samples['y']), axis=0)
-    pred_std = calc_prediction_std(y_pred_bma_mean, Y_te)
-    bma_mean_pi = np.array([(y_pred_bma_mean - 1.96*pred_std).numpy(), (y_pred_bma_mean + 1.96*pred_std).numpy()])
-    print(y_pred_bma_mean)
+    # # BMA-mean.
+    # print('BMA-mean:', flush=True)
+    # data_dict, bma_mean_joint_samples = get_bma_result(
+    #     data_dicts, bma_config=bma_config)
+    # y_pred_bma_mean = np.mean(np.nan_to_num(
+    #     bma_mean_joint_samples['y']), axis=0)
+    # pred_std = calc_prediction_std(y_pred_bma_mean, Y_te)
+    # bma_mean_pi = np.array(
+    #     [(y_pred_bma_mean - 1.96*pred_std).numpy(), (y_pred_bma_mean + 1.96*pred_std).numpy()])
+    # print(y_pred_bma_mean)
 
-    # BMA.
-    bma_var_config = bne_config.copy()
-    bma_var_config['mcmc_initialize_from_map'] = bma_config['mcmc_initialize_from_map']
-    print('BMA var config:', flush=True)
-    print(bma_var_config)
-    bma_joint_samples = get_bne_result(data_dict, moment_mode='none', bne_config=bma_var_config)
-    y_pred_bma = np.mean(np.nan_to_num(bma_joint_samples['y']), axis=0)
-    print(y_pred_bma)
-    pred_std = calc_prediction_std(y_pred_bma, Y_te)
-    bma_pi = np.array([(y_pred_bma - 1.96*pred_std).numpy(),
-                       (y_pred_bma + 1.96*pred_std).numpy()])
+    # # BMA.
+    # bma_var_config = bne_config.copy()
+    # bma_var_config['mcmc_initialize_from_map'] = bma_config['mcmc_initialize_from_map']
+    # print('BMA var config:', flush=True)
+    # print(bma_var_config)
+    # bma_joint_samples = get_bne_result(data_dict, moment_mode='none',
+    #                                    bne_config=bma_var_config)
+    # y_pred_bma = np.mean(np.nan_to_num(bma_joint_samples['y']), axis=0)
+    # print(y_pred_bma)
+    # pred_std = calc_prediction_std(y_pred_bma, Y_te)
+    # bma_pi2 = np.array([(y_pred_bma - 1.96*pred_std).numpy(),
+    #                    (y_pred_bma + 1.96*pred_std).numpy()])
 
     # BAE.
     print('BNE config:', flush=True)
@@ -337,45 +347,24 @@ for fold_id in range(1,7):
                       (y_pred_bae + 1.96*pred_std).numpy()])
 
     # save the rmse & nll for each fold
-    rmse_bma_mean.append(rmse(Y_te, y_pred_bma_mean))
-    nll_bma_mean.append(nll(Y_te, y_pred_bma_mean))
-    rmse_bma.append(rmse(Y_te, y_pred_bma))
-    nll_bma.append(nll(Y_te, y_pred_bma))
+    # rmse_bma_mean.append(rmse(Y_te, y_pred_bma_mean))
+    # nll_bma_mean.append(nll(Y_te, y_pred_bma_mean))
+    # rmse_bma2.append(rmse(Y_te, y_pred_bma))
+    # nll_bma.append(nll(Y_te, y_pred_bma))
     rmse_bae.append(rmse(Y_te, y_pred_bae))
     nll_bae.append(nll(Y_te, y_pred_bae))
 
     # save the coverage for each fold
-    coverage_bma_mean += np.sum([(Y_te[i] > bma_mean_pi[0][i])
-                                & (Y_te[i] < bma_mean_pi[1][i]) for i in range(len(Y_te))])
-    coverage_bma += np.sum([(Y_te[i] > bma_pi[0][i]) &
-                           (Y_te[i] < bma_pi[1][i]) for i in range(len(Y_te))])
+    # coverage_bma_mean += np.sum([(Y_te[i] > bma_mean_pi[0][i])
+    #                             & (Y_te[i] < bma_mean_pi[1][i]) for i in range(len(Y_te))])
+    # coverage_bma += np.sum([(Y_te[i] > bma_pi2[0][i]) &
+    #                        (Y_te[i] < bma_pi2[1][i]) for i in range(len(Y_te))])
     coverage_bae += np.sum([(Y_te[i] > bae_pi[0][i]) &
                            (Y_te[i] < bae_pi[1][i]) for i in range(len(Y_te))])
 
-    print("rmse:", flush=True)
-    print(rmse_bma_mean, rmse_bma, rmse_bae)
-    print("nll:", flush=True)
-    print(nll_bma_mean, nll_bma, nll_bae)
 
-    
-
-print("RMSE LR: ", np.mean(rmse_lr), np.median(rmse_lr), np.std(rmse_lr))
-print("RMSE GAM: ", np.mean(rmse_gam), np.median(rmse_gam), np.std(rmse_gam))
-print("RMSE BMA: ", np.mean(rmse_bma_mean),
-      np.median(rmse_bma_mean), np.std(rmse_bma_mean))
-
-print("NLL LR: ", np.mean(nll_lr), np.median(nll_lr), np.std(nll_lr))
-print("NLL GAM: ", np.mean(nll_gam), np.median(nll_gam), np.std(nll_gam))
-print("NLL BMA: ", np.mean(nll_bma), np.median(nll_bma), np.std(nll_bma))
-
-print("Coverage LR: ", coverage_lr/len(Y_train))
-print("Coverage GAM: ", coverage_gam/len(Y_train))
-print("Coverage BMA: ", coverage_bma/len(Y_train))
-
-with open('spcv0412.txt', 'a') as f:
+with open('spcv0415.txt', 'a') as f:
     f.write('\n')
     f.write(''.join(str(bne_gp_lengthscale)+ " "+str(bne_gp_l2_regularizer) + " "+ 
-                    str(np.mean(rmse_bma)) + " "+ str(np.median(rmse_bma))+ " "+str(np.std(rmse_bma))+ " "+str(coverage_bma/len(Y_train))+ " "+
-                    str(np.mean(nll_bma)) + " "+ str(np.median(nll_bma))+ " "+ 
                     str(np.mean(rmse_bae)) + " "+ str(np.median(rmse_bae))+ " "+str(np.std(rmse_bae))+ " "+str(coverage_bae/len(Y_train))+ " "+
                     str(np.mean(nll_bae)) + " "+ str(np.median(nll_bae))))
