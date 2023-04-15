@@ -214,13 +214,13 @@ BNE_lenthscale = bne_gp_lengthscale
 BMA_L2 = bma_gp_l2_regularizer
 BNE_L2 = bne_gp_l2_regularizer
 
-from rpy2.robjects.conversion import localconverter
-from rpy2.robjects import pandas2ri, r
-import rpy2.robjects as ro
-import pandas as pd
-from rpy2.robjects.packages import importr
-from rpy2 import robjects as ro
-import rpy2
+# from rpy2.robjects.conversion import localconverter
+# from rpy2.robjects import pandas2ri, r
+# import rpy2.robjects as ro
+# import pandas as pd
+# from rpy2.robjects.packages import importr
+# from rpy2 import robjects as ro
+# import rpy2
 
 rmse_lr = []
 rmse_gam = []
@@ -237,25 +237,7 @@ error_df = pd.DataFrame(columns=['lon', 'lat', 'raw_error'])
 
 coverage_lr, coverage_gam, coverage_bma_mean, coverage_bma, coverage_bae = 0, 0, 0, 0, 0
 coverage_bma2 = 0
-#from rpy2.robjects import pandas2ri
-# import R's "base" package
-base = importr('base')
-#ms = importr('MSGARCH')
-# import R's "utils" package
-utils = importr('utils')
 
-with localconverter(ro.default_converter + pandas2ri.converter):
-  # convert "lon" and "lat" in training_eastMA_noMI into scaled X_train1 values
-  training_eastMA_noMI["lon"] = (
-      training_eastMA_noMI["lon"] - X_centr[0]) / X_scale[0]
-  training_eastMA_noMI["lat"] = (
-      training_eastMA_noMI["lat"] - X_centr[1]) / X_scale[1]
-  r_from_pd_df = ro.conversion.py2rpy(training_eastMA_noMI)
-
-
-mgcv = importr('mgcv')
-stats = importr('stats')
-ciTools = importr('ciTools')
 
 rmse_bma_mean, rmse_bma2, rmse_bae = [], [], []
 for fold_id in range(1,7):
@@ -311,10 +293,10 @@ for fold_id in range(1,7):
                       base_preds_test=base_preds_te)
 
     print(Y_te)
-    # # BMA-mean.
-    # print('BMA-mean:', flush=True)
-    # data_dict, bma_mean_joint_samples = get_bma_result(
-    #     data_dicts, bma_config=bma_config)
+    # BMA-mean.
+    print('BMA-mean:', flush=True)
+    data_dict, bma_mean_joint_samples = get_bma_result(
+        data_dicts, bma_config=bma_config)
     # y_pred_bma_mean = np.mean(np.nan_to_num(
     #     bma_mean_joint_samples['y']), axis=0)
     # pred_std = calc_prediction_std(y_pred_bma_mean, Y_te)
