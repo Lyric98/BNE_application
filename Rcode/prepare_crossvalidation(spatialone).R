@@ -15,16 +15,16 @@ library(nngeo)
 eastMA.bb <- list(xMin = -73.5, xMax = -69.9, yMin = 40.49, yMax = 44.3)
 # current_path <- rstudioapi::getActiveDocumentContext()$path
 # setwd(dirname(current_path))
-base_models <- readr::read_csv('./data/prediction_dataset/base_model_predictions_eastMA.csv')
+base_models <- readr::read_csv('../data/prediction_dataset/base_model_predictions_eastMA.csv')
 
 # 1b. make simple feature 
 base_models <- base_models %>% 
   sf::st_as_sf(coords = c("lon", "lat"), crs=st_crs("epsg:4326")) 
 
 # 1c. read monitoring data 
-aqs <- readr::read_csv('./data/ground_truth/curated/aqs_curated_2011.csv')
+aqs <- readr::read_csv('../data/ground_truth/curated/aqs_curated_2011.csv')
 
-training <- readr::read_csv('./data/training_dataset/training_eastMA.csv')
+training <- readr::read_csv('../data/training_dataset/training_eastMA.csv')
 training51 <- training[c(1:51),]
 
 # 2b. plot to confirm success
@@ -110,4 +110,5 @@ training51 %>%
   sf::st_as_sf(coords = c("lon", "lat"), crs=st_crs("epsg:4269")) %>% 
   plot()
 
-write.csv(training51, "./data/training_dataset/training51.csv", row.names = FALSE)
+write.csv(training51, "../data/training_dataset/training51_sp.csv", row.names = FALSE)
+
