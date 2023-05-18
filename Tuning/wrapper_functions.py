@@ -1929,12 +1929,14 @@ def posterior_heatmap_2d(plot_data, X,
                 s=3,
                 c=plot_data, cmap=cmap, norm=norm)
     cbar = plt.colorbar()
+    plt.scatter(x=np.array([-71.06], dtype=np.float32), y=np.array(
+            [42.36], dtype=np.float32), marker='*', s=500, c='black')
 
     #     plot monitors "lon", "lat"
     if isinstance(X_monitor, np.ndarray):
         plt.scatter(x=X_monitor[:, 0], y=X_monitor[:, 1],
-                    s=10, c='black')
-
+                    s=50, c='black')
+        
     # adjust plot window
     plt.xlim((np.min(X[:, 0]), np.max(X[:, 0])))
     plt.ylim((np.min(X[:, 1]), np.max(X[:, 1])))
