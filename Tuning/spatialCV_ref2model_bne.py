@@ -268,7 +268,7 @@ for fold_id in range(1, 7):
                            (Y_te[i] < bne_pi[1][i]) for i in range(len(Y_te))])
 
 
-with open('spcv0415.txt', 'a') as f:
+with open('spcv0609.txt', 'a') as f:
     f.write('\n')
     f.write(''.join(str(bne_gp_lengthscale) + " "+str(bne_gp_l2_regularizer) + " " +
                     str(np.mean(rmse_bne)) + " " + str(np.median(rmse_bne)) + " "+str(np.std(rmse_bne)) + " "+str(coverage_bne/len(Y_train)) + " " +
