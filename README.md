@@ -26,13 +26,13 @@ Shaddick, Gavin, et al. "Data integration for the assessment of population expos
 https://pubs.acs.org/doi/10.1021/acs.est.8b02864 
 
 
-* GS2018 (Center for Air, Climate, and Energy Solutions)
+* SK2020 (Center for Air, Climate, and Energy Solutions)
 Kim S.-Y.; Bechle, M.; Hankey, S.; Sheppard, L.; Szpiro, A. A.; Marshall, J. D. 2020. “Concentrations of criteria pollutants in the contiguous U.S., 1979 – 2015: Role of prediction model parsimony in integrated empirical geographic regression.” PLoS ONE 15(2), e0228535. DOI: 10.1371/journal.pone.0228535
 https://www.caces.us/data 
 
 
 Additionally, the processed version of the three base models’ prediction dataset are included in 
-https://github.com/Lyric98/BNE_application/blob/master/data/training_dataset/training_eastMA.csv 
+https://github.com/Lyric98/BNE_application/blob/master/data/training_dataset/training51.csv 
 
 
 
