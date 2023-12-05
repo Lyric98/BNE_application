@@ -11,7 +11,7 @@ This environment includes all necessary dependencies.
 
 To create an `BNE` executable to run experiments, run `pip install -e .`.
 
-## Data
+## Part 1: Data
 
 ### Availability
 
@@ -54,9 +54,14 @@ In our case study, we processed the first 7 columns of the above CSV file and th
 * **lon**: Longitude coordinates of the monitor stations;
 * **lat**: Latitude coordinates of the monitor stations.
 
+## Part 2: Code
+
+The codebase includes modules to train BNE models using base model predictions and air pollution outcome (under [folder name]), and also jupyer notebooks for generating prediction and visualize results ([folder/file name]).  The detailed instructions for training code is in /[train_code_folder]/README.me, and the instructions for executing the jupyter notebook is contained in the notebook itself.
 
 
-## Instructions for Use
+
+
+## Part 3: Reproducibility workflow
 
 ### Reproducibility 
 Each Jupyter-notebook file (.ipynb) or Python file (.py) can be run independently to generate the examples, simulation experiment, or the case study. The R code can be run to prepare the data for the case study. Note that base data refers to data that the base models are trained on; train data refers to data that the ensemble is trained on, and test data refers to data that the ensemble is evaluated on. 

@@ -1,1 +1,0 @@
-lengthscale l2regularizer bma_mean_rmse_mean bma_mean_rmse_median bma_mean_std bma_mean_cov nll_bma_mean_mean nll_bma_mean_median nll_bma_mean_std 
