@@ -47,7 +47,7 @@ https://github.com/Lyric98/BNE_application/blob/master/data/training_dataset/tra
 In our case study, we processed the first 7 columns of the above CSV file and the Column Descriptions are as following:
 
 * **mon_id**: Unique identifier for monitors' information (State-County-dentifier);
-* **aqs**: This column refers to the United States Environmental Protection Agency (USEPA) AQS data, which was downloaded from the USEPA's Air Data clearinghouse https://aqs.epa.gov/aqsweb/airdata/download_files.html ;
+* **aqs**: This column refers to the United States Environmental Protection Agency (USEPA) AQS data, which was downloaded from the USEPA's Air Data clearinghouse https://aqs.epa.gov/aqsweb/airdata/download_files.html;
 * **pred_av**: Predicted values from the base model "MH2021";
 * **pred_gs**: Predicted values from the base model "GS2018";
 * **pred_caces**: Predicted values from the base model "SK2020";
@@ -56,7 +56,7 @@ In our case study, we processed the first 7 columns of the above CSV file and th
 
 ## Part 2: Code
 
-The codebase includes modules to train BNE models using base model predictions and air pollution outcome (under [folder name]), and also jupyer notebooks for generating prediction and visualize results ([folder/file name]).  The detailed instructions for training code is in /[train_code_folder]/README.me, and the instructions for executing the jupyter notebook is contained in the notebook itself.
+The codebase includes modules to train BNE models using base model predictions and air pollution outcome (under [BNE_method](https://github.com/Lyric98/BNE_application/tree/master/BNE_method)), and also jupyer notebooks for generating prediction and visualize results ([folder/file name]).  The detailed instructions for training code is in /[train_code_folder]/README.me, and the instructions for executing the jupyter notebook is contained in the notebook itself.
 
 
 
