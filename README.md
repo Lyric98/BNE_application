@@ -13,6 +13,8 @@ To create an `BNE` executable to run experiments, run `pip install -e .`.
 
 ## Data
 
+### Availability
+
 For prediction files of air pollution models (MH2021, GS2018, and SK2020 to be used as base models for BNE ensemble), the dataset can be requested by following instructions of the respective websites:
 
 
@@ -30,9 +32,27 @@ https://pubs.acs.org/doi/10.1021/acs.est.8b02864
 Kim S.-Y.; Bechle, M.; Hankey, S.; Sheppard, L.; Szpiro, A. A.; Marshall, J. D. 2020. “Concentrations of criteria pollutants in the contiguous U.S., 1979 – 2015: Role of prediction model parsimony in integrated empirical geographic regression.” PLoS ONE 15(2), e0228535. DOI: 10.1371/journal.pone.0228535
 https://www.caces.us/data 
 
+For geographic data mapping, we utilized shapefiles provided by the United States Census Bureau, sourced from their Topologically Integrated Geographic Encoding and Referencing (TIGER) Geographic Information System (GIS) clearinghouse. These files can be accessed at the following URL: https://www2.census.gov/geo/tiger/GENZ2015/shp/. The TIGER/Line shapefiles offer detailed and comprehensive geographic data that are essential for accurate mapping and spatial analysis.
 
-Additionally, the processed version of the three base models’ prediction dataset are included in 
-https://github.com/Lyric98/BNE_application/blob/master/data/training_dataset/training51.csv 
+
+### Description
+
+#### File format(s)
+
+The processed version of the above three base models’ prediction dataset are included in 
+https://github.com/Lyric98/BNE_application/blob/master/data/training_dataset/training51.csv . We used this CSV file to processed our case study.
+
+#### Data dictionary
+
+In our case study, we processed the first 7 columns of the above CSV file and the Column Descriptions are as following:
+
+* **mon_id**: Unique identifier for monitors' information (State-County-dentifier);
+* **aqs**: This column refers to the United States Environmental Protection Agency (USEPA) AQS data, which was downloaded from the USEPA's Air Data clearinghouse https://aqs.epa.gov/aqsweb/airdata/download_files.html ;
+* **pred_av**: Predicted values from the base model "MH2021";
+* **pred_gs**: Predicted values from the base model "GS2018";
+* **pred_caces**: Predicted values from the base model "SK2020";
+* **lon**: Longitude coordinates of the monitor stations;
+* **lat**: Latitude coordinates of the monitor stations.
 
 
 
