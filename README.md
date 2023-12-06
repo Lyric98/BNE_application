@@ -56,7 +56,7 @@ In our case study, we processed the first 7 columns of the above CSV file and th
 
 ## Part 2: Code
 
-The codebase includes modules to train BNE models using base model predictions and air pollution outcome (under [BNE_method](https://github.com/Lyric98/BNE_application/tree/master/BNE_method)), and also jupyer notebooks for generating prediction and visualize results ([BNE_method/case_study_results](https://github.com/Lyric98/BNE_application/tree/master/BNE_method/case_study_results)). The detailed instructions for training code for parameter tuning is in [BNE_method/Tuning/README.me](https://github.com/Lyric98/BNE_application/tree/master/BNE_method/Tuning), and the instructions for executing the jupyter notebook is contained in the notebook itself.
+The codebase includes modules to train BNE models using base model predictions and air pollution outcome (under [BNE_method](https://github.com/Lyric98/BNE_application/tree/master/BNE_method)), and also jupyer notebooks for generating prediction and visualize results ([BNE_method/case_study_results](https://github.com/Lyric98/BNE_application/tree/master/BNE_method/case_study_results)). The detailed instructions for training code for parameter tuning is in [BNE_method/Tuning/README.me](https://github.com/Lyric98/BNE_application/tree/master/BNE_method/Tuning#readme), and the instructions for executing the jupyter notebook is contained in the notebook itself.
 
 #### Supporting software requirements 
 - Python = 3.8
