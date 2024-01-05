@@ -66,7 +66,7 @@ The codebase includes modules to train BNE models using base model predictions a
 Libraries and dependencies used by the code are detailed in `environment.yml`.
 
 
-## Part 3: Reproducibility workflow
+## Part 3: Reproducibility Workflow
 
 ### Reproducibility Instructions
 Each Jupyter-notebook file (.ipynb) or Python file (.py) can be run independently to generate the examples, simulation experiment, or the case study. The R code can be run to prepare the data for the case study. Note that base data refers to data that the base models are trained on; train data refers to data that the ensemble is trained on, and test data refers to data that the ensemble is evaluated on. 
@@ -78,3 +78,7 @@ For the case study experiments, Table 4 and Table S3 are generated diretly from 
 ### Expected run-time
 
 For the Jupyter notebook files we are able to reproduce on a standard desktop machine (Processor: 2.3 GHz Dual-Core Intel Core i5; Memory: 8 GB 2133 MHz LPDDR3) during 1-2 hours. But for tuning parameters, we need to run it on clusters.
+
+### Additional documentation (Tuning Paramater)
+
+For the case studies, the computations in tuning the hyperparameters of the BNE models were run on the FASRC Cannon cluster supported by the FAS Division of Science Research Computing Group at Harvard University.
