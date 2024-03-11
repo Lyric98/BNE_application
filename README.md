@@ -4,7 +4,10 @@
 
 To install requirements:
 ```
+$ conda env create -f environment.yml
+or 
 $ conda env update -f environment.yml
+
 $ conda activate BNE
 ```
 This environment includes all necessary dependencies.
