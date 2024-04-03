@@ -8,10 +8,11 @@ dependencies:
     - edward2 == 0.0.2
     - gpflow #== 2.3.0
     - numpy #== 1.19.2
-    - tensorflow #== 2.7.0
+    - tensorflow #== 2.10.0
     - pandas #== 1.1.3
     - matplotlib
     - seaborn #== 0.11.0
+    - scikit-learn
     # - logging
     # - typing
     # - os

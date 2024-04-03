@@ -23,8 +23,8 @@ import seaborn as sns
 import edward2 as ed
 import tensorflow_probability as tfp
 
-from sklearn.model_selection import KFold 
-from sklearn.linear_model import LinearRegression
+# from sklearn.model_selection import KFold 
+# from sklearn.linear_model import LinearRegression
 
 tfd = tfp.distributions
 tfb = tfp.bijectors
